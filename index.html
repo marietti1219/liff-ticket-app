@@ -28,7 +28,7 @@ button {
 <div id="ticket"></div>
 <div class="error" id="error"></div>
 
-<button onclick="useTicket()">1回使う</button>
+<button id="useBtn" onclick="useTicket()">1回使う</button>
 
 <script>
 // ======================
@@ -38,10 +38,10 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbw4dSDoPtEr88njDBASOKmq
 const API_KEY = 'salon-api-key-2025';
 
 // ======================
-// 状態
+// 状態（開発用固定）
 // ======================
 let state = {
-  userId: 'Uf8fc1243f3e8ffed6509b594660c679e', // ←固定（開発用）
+  userId: 'Uf8fc1243f3e8ffed6509b594660c679e',
   ticket: null
 };
 
@@ -64,14 +64,12 @@ async function callAPI(body) {
 }
 
 // ======================
-// 初期化（LIFFなし版）
+// 初期化
 // ======================
 async function init() {
   try {
     document.getElementById('user').innerText = 'テストユーザー';
-
     await loadTickets();
-
   } catch (e) {
     showError(e.message);
   }
@@ -82,6 +80,8 @@ async function init() {
 // ======================
 async function loadTickets() {
   try {
+    clearError();
+
     const data = await callAPI({
       action: 'list',
       userId: state.userId
@@ -114,6 +114,12 @@ async function loadTickets() {
 // ======================
 async function useTicket() {
   try {
+    clearError();
+
+    // ボタン連打防止
+    const btn = document.getElementById('useBtn');
+    btn.disabled = true;
+
     const data = await callAPI({
       action: 'use',
       userId: state.userId,
@@ -127,16 +133,23 @@ async function useTicket() {
       showError(data.error);
     }
 
+    btn.disabled = false;
+
   } catch (e) {
     showError('通信失敗');
+    document.getElementById('useBtn').disabled = false;
   }
 }
 
 // ======================
-// エラー
+// エラー処理
 // ======================
 function showError(msg) {
   document.getElementById('error').innerText = msg;
+}
+
+function clearError() {
+  document.getElementById('error').innerText = '';
 }
 
 // ======================
