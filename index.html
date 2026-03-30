@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回数券</title>
+
+<script src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
+
+<style>
+body {
+  font-family: sans-serif;
+  padding: 20px;
+}
+button {
+  padding: 12px;
+  width: 100%;
+  margin-top: 20px;
+}
+.error {
+  color: red;
+}
+</style>
+</head>
+
+<body>
+
+<h2>回数券</h2>
+<div id="user"></div>
+<div id="ticket"></div>
+<div class="error" id="error"></div>
+
+<button onclick="useTicket()">1回使う</button>
+
+<script>
+// ======================
+// 設定
+// ======================
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbw4dSDoPtEr88njDBASOKmqaZrYCXEg4ZCnV7_PhYNQpA-EFuK_PbkCnk10ypMn6ya8Yw/exec';
+const API_KEY = 'salon-api-key-2025';
+const LIFF_ID = '2009640952-lBudTrLt';
+
+// ======================
+// 状態
+// ======================
+let state = {
+  userId: null,
+  ticket: null
+};
+
+// ======================
+// API呼び出し
+// ======================
+async function callAPI(body) {
+  const res = await fetch(GAS_URL, {
+    method: 'POST',
+    headers: {
+      // 🔥 これ重要（CORS回避）
+      'Content-Type': 'text/plain'
+    },
+    body: JSON.stringify({
+      apiKey: API_KEY,
+      ...body
+    })
+  });
+
+  return res.json();
+}
+
+// ======================
+// 初期化
+// ======================
+async function init() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
+
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      return;
+    }
+
+    const profile = await liff.getProfile();
+    state.userId = profile.userId;
+
+    document.getElementById('user').innerText = profile.displayName;
+
+    await loadTickets();
+
+  } catch (e) {
+    showError(e.message);
+  }
+}
+
+// ======================
+// チケット取得
+// ======================
+async function loadTickets() {
+  try {
+    const data = await callAPI({
+      action: 'list',
+      userId: state.userId
+    });
+
+    if (data.status !== 200) {
+      showError(data.error);
+      return;
+    }
+
+    const t = data.tickets[0];
+
+    if (!t) {
+      document.getElementById('ticket').innerText = 'チケットなし';
+      return;
+    }
+
+    state.ticket = t;
+
+    document.getElementById('ticket').innerText =
+      `残り：${t.remaining}回`;
+
+  } catch (e) {
+    showError('通信失敗');
+  }
+}
+
+// ======================
+// 使用
+// ======================
+async function useTicket() {
+  try {
+    const data = await callAPI({
+      action: 'use',
+      userId: state.userId,
+      type: 'face'
+    });
+
+    if (data.status === 200) {
+      alert('使用しました');
+      await loadTickets();
+    } else {
+      showError(data.error);
+    }
+
+  } catch (e) {
+    showError('通信失敗');
+  }
+}
+
+// ======================
+// エラー
+// ======================
+function showError(msg) {
+  document.getElementById('error').innerText = msg;
+}
+
+// ======================
+init();
+</script>
+
+</body>
+</html>
