@@ -107,7 +107,10 @@ async function loadTickets() {
       return;
     }
 
-    const t = data.tickets[0];
+    // ★ 修正ポイント：自分のチケットを探す
+    const t = data.tickets.find(ticket =>
+      ticket.type.startsWith('face') && ticket.remaining > 0
+    );
 
     if (!t) {
       document.getElementById('ticket').innerText = 'チケットなし';
