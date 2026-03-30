@@ -6,7 +6,6 @@
 <title>回数券</title>
 <script src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
 <style>
-  /* ===== 設定値 ===== */
   :root {
     --green:     #2D6A4F;
     --green-mid: #40916C;
@@ -35,7 +34,6 @@
     flex-direction: column;
   }
 
-  /* ===== ローディング ===== */
   #loading {
     position: fixed; inset: 0;
     background: var(--cream);
@@ -53,7 +51,6 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   #loading p { font-size: 14px; color: var(--ink-lt); }
 
-  /* ===== ヘッダー ===== */
   header {
     padding: 20px 20px 0;
     display: flex; align-items: center; gap: 10px;
@@ -67,10 +64,8 @@
   .logo svg { width: 18px; height: 18px; fill: white; }
   header h1 { font-size: 15px; font-weight: 700; color: var(--green); letter-spacing: .05em; }
 
-  /* ===== メインコンテンツ ===== */
   main { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
 
-  /* ===== ユーザー情報 ===== */
   .user-bar {
     display: flex; align-items: center; gap: 10px;
     background: white;
@@ -89,7 +84,6 @@
   .user-name { font-size: 14px; font-weight: 600; color: var(--ink); }
   .user-sub  { font-size: 11px; color: var(--ink-lt); margin-top: 1px; }
 
-  /* ===== 券種カード ===== */
   .ticket-card {
     background: white;
     border: 1.5px solid #EBEBEB;
@@ -112,25 +106,17 @@
     background: var(--green-bg); color: var(--green);
     white-space: nowrap;
   }
-  .expiry-badge.warn  { background: var(--amber-bg); color: var(--amber); }
-  .expiry-badge.expired { background: var(--red-bg); color: var(--red); }
+  .expiry-badge.warn    { background: var(--amber-bg); color: var(--amber); }
+  .expiry-badge.expired { background: var(--red-bg);   color: var(--red); }
 
-  /* 残枚数表示 */
   .remaining-wrap {
     display: flex; align-items: baseline; gap: 6px;
     margin-bottom: 12px;
   }
-  .remaining-num {
-    font-size: 56px; font-weight: 900; line-height: 1;
-    color: var(--green); letter-spacing: -.04em;
-    transition: transform .3s cubic-bezier(.34,1.56,.64,1);
-  }
-  .remaining-num.pop { animation: pop .35s cubic-bezier(.34,1.56,.64,1); }
-  @keyframes pop { 0%{transform:scale(1.3)} 100%{transform:scale(1)} }
-  .remaining-unit { font-size: 16px; color: var(--ink-mid); font-weight: 600; }
+  .remaining-num   { font-size: 56px; font-weight: 900; line-height: 1; color: var(--green); letter-spacing: -.04em; }
+  .remaining-unit  { font-size: 16px; color: var(--ink-mid); font-weight: 600; }
   .remaining-total { font-size: 13px; color: var(--ink-lt); }
 
-  /* プログレスバー */
   .progress-track {
     height: 6px; background: var(--green-bg);
     border-radius: 3px; overflow: hidden; margin-bottom: 16px;
@@ -141,13 +127,11 @@
     transition: width .6s cubic-bezier(.4,0,.2,1);
   }
 
-  /* ===== エラー・空状態 ===== */
   .empty-state {
     background: white; border: 1.5px solid #EBEBEB;
-    border-radius: var(--radius); padding: 32px 20px;
-    text-align: center;
+    border-radius: var(--radius); padding: 32px 20px; text-align: center;
   }
-  .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-icon  { font-size: 40px; margin-bottom: 12px; }
   .empty-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
   .empty-desc  { font-size: 13px; color: var(--ink-lt); line-height: 1.6; }
 
@@ -159,27 +143,18 @@
   }
   .error-box.show { display: block; }
 
-  /* ===== 消費ボタン ===== */
   .use-btn {
     width: 100%; padding: 17px;
     background: var(--green);
     color: white; font-size: 16px; font-weight: 700;
     border: none; border-radius: var(--radius-sm);
     cursor: pointer; letter-spacing: .03em;
-    transition: background .15s, transform .1s, opacity .15s;
+    transition: background .15s, transform .1s;
     position: relative; overflow: hidden;
   }
   .use-btn:active:not(:disabled) { transform: scale(.98); }
-  .use-btn:disabled {
-    background: #C8C8C8; cursor: not-allowed; opacity: .7;
-  }
-  .use-btn.loading::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: rgba(0,0,0,.1);
-  }
+  .use-btn:disabled { background: #C8C8C8; cursor: not-allowed; opacity: .7; }
 
-  /* ===== 確認モーダル ===== */
   .modal-overlay {
     position: fixed; inset: 0;
     background: rgba(0,0,0,.5);
@@ -210,27 +185,24 @@
     background: var(--green-bg);
     border-radius: var(--radius-sm);
     padding: 16px; margin-bottom: 24px;
-    display: flex; justify-content: space-between; align-items: center;
   }
   .modal-ticket-name { font-size: 15px; font-weight: 700; color: var(--green); }
-  .modal-remaining   { font-size: 13px; color: var(--green-mid); }
+  .modal-remaining   { font-size: 13px; color: var(--green-mid); margin-top: 4px; }
 
   .modal-btns { display: flex; flex-direction: column; gap: 10px; }
   .btn-confirm {
     padding: 16px; background: var(--green);
     color: white; font-size: 16px; font-weight: 700;
     border: none; border-radius: var(--radius-sm);
-    cursor: pointer; transition: background .15s, transform .1s;
+    cursor: pointer; transition: transform .1s;
   }
   .btn-confirm:active { transform: scale(.98); }
   .btn-cancel {
     padding: 14px; background: none;
     color: var(--ink-lt); font-size: 15px; font-weight: 600;
-    border: 1px solid #EBEBEB; border-radius: var(--radius-sm);
-    cursor: pointer;
+    border: 1px solid #EBEBEB; border-radius: var(--radius-sm); cursor: pointer;
   }
 
-  /* ===== 完了画面 ===== */
   .done-screen {
     position: fixed; inset: 0; background: var(--cream);
     display: flex; flex-direction: column;
@@ -243,36 +215,31 @@
 
   .done-circle {
     width: 88px; height: 88px;
-    background: var(--green);
-    border-radius: 50%;
+    background: var(--green); border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     margin-bottom: 24px;
     animation: scaleIn .4s cubic-bezier(.34,1.56,.64,1) both;
   }
-  @keyframes scaleIn { from{transform:scale(0)} to{transform:scale(1)} }
+  @keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
   .done-circle svg { width: 44px; height: 44px; stroke: white; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
-  .done-title { font-size: 26px; font-weight: 900; color: var(--ink); margin-bottom: 8px; letter-spacing: -.03em; }
-  .done-sub   { font-size: 15px; color: var(--ink-mid); margin-bottom: 6px; }
+  .done-title     { font-size: 26px; font-weight: 900; color: var(--ink); margin-bottom: 8px; letter-spacing: -.03em; }
+  .done-sub       { font-size: 15px; color: var(--ink-mid); margin-bottom: 6px; }
   .done-remaining { font-size: 14px; color: var(--ink-lt); margin-bottom: 32px; }
-
   .done-close {
     padding: 15px 48px; background: var(--green);
     color: white; font-size: 15px; font-weight: 700;
-    border: none; border-radius: var(--radius-sm);
-    cursor: pointer;
+    border: none; border-radius: var(--radius-sm); cursor: pointer;
   }
 </style>
 </head>
 <body>
 
-<!-- ローディング -->
 <div id="loading">
   <div class="spinner"></div>
   <p>読み込み中...</p>
 </div>
 
-<!-- ヘッダー -->
 <header>
   <div class="logo">
     <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
@@ -280,39 +247,26 @@
   <h1>回数券</h1>
 </header>
 
-<!-- メイン -->
 <main id="main" style="display:none">
-
-  <!-- ユーザー情報 -->
   <div class="user-bar">
-    <div class="avatar" id="avatar">
-      <span id="avatar-initials"></span>
-    </div>
+    <div class="avatar" id="avatar"><span id="avatar-initials"></span></div>
     <div>
       <div class="user-name" id="user-name">読み込み中...</div>
-      <div class="user-sub" id="ticket-type-label"></div>
+      <div class="user-sub"  id="ticket-type-label"></div>
     </div>
   </div>
-
-  <!-- エラー表示 -->
   <div class="error-box" id="error-box"></div>
-
-  <!-- チケット表示エリア -->
   <div id="ticket-area"></div>
-
 </main>
 
-<!-- 確認モーダル -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">1回使用しますか？</div>
-    <div class="modal-desc" id="modal-desc">タップすると残枚数が1回減ります。この操作は取り消せません。</div>
+    <div class="modal-desc">タップすると残枚数が1回減ります。この操作は取り消せません。</div>
     <div class="modal-ticket-info">
-      <div>
-        <div class="modal-ticket-name" id="modal-ticket-name"></div>
-        <div class="modal-remaining" id="modal-remaining"></div>
-      </div>
+      <div class="modal-ticket-name" id="modal-ticket-name"></div>
+      <div class="modal-remaining"   id="modal-remaining"></div>
     </div>
     <div class="modal-btns">
       <button class="btn-confirm" id="btn-confirm">使用する</button>
@@ -321,24 +275,22 @@
   </div>
 </div>
 
-<!-- 完了画面 -->
 <div class="done-screen" id="done-screen">
   <div class="done-circle">
     <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
   </div>
   <div class="done-title">使用しました</div>
-  <div class="done-sub" id="done-ticket-name"></div>
+  <div class="done-sub"       id="done-ticket-name"></div>
   <div class="done-remaining" id="done-remaining"></div>
   <button class="done-close" onclick="closeDone()">閉じる</button>
 </div>
 
 <script>
-// ===== 設定（ここを自分の値に変更） =====
+// ===== 設定（自分の値に変更済み） =====
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbw4dSDoPtEr88njDBASOKmqaZrYCXEg4ZCnV7_PhYNQpA-EFuK_PbkCnk10ypMn6ya8Yw/exec';
 const API_KEY = 'salon-api-key-2025';
 const LIFF_ID = '2009640952-lBudTrLt';
 
-// 券種マスタ
 const TICKET_MASTER = {
   face: '鍼（お顔）',
   body: '鍼（お体）',
@@ -346,43 +298,40 @@ const TICKET_MASTER = {
   ems:  '楽トレ(EMS)',
 };
 
-// ===== 状態管理 =====
 let state = {
-  userId:    null,
-  profile:   null,
-  type:      null,
-  qty:       null,
-  ticket:    null,
-  processing: false,
+  userId: null, profile: null,
+  type: null, qty: null,
+  ticket: null, processing: false,
 };
+
+// ===== GAS呼び出し（GETリクエスト＝CORS問題なし） =====
+async function callGAS(params) {
+  params.apiKey = API_KEY;
+  const query = Object.entries(params)
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+    .join('&');
+  const res = await fetch(`${GAS_URL}?${query}`, { method: 'GET' });
+  return res.json();
+}
 
 // ===== 初期化 =====
 async function init() {
   try {
-    // URLパラメータ取得
     const params = new URLSearchParams(location.search);
     state.type = params.get('type') || 'face';
     state.qty  = params.get('qty');
 
-    // LIFF初期化
     await liff.init({ liffId: LIFF_ID });
+    if (!liff.isLoggedIn()) { liff.login(); return; }
 
-    if (!liff.isLoggedIn()) {
-      liff.login();
-      return;
-    }
-
-    // プロフィール取得
     state.profile = await liff.getProfile();
     state.userId  = state.profile.userId;
 
-    // UI描画
     renderUser();
     await loadTickets();
 
     hide('loading');
     show('main');
-
   } catch (err) {
     showError('初期化エラー: ' + err.message);
     hide('loading');
@@ -390,14 +339,10 @@ async function init() {
   }
 }
 
-// ===== ユーザー情報描画 =====
 function renderUser() {
   const name = state.profile?.displayName || 'お客様';
   document.getElementById('user-name').textContent = name;
-  document.getElementById('ticket-type-label').textContent =
-    TICKET_MASTER[state.type] || state.type;
-
-  // アバター
+  document.getElementById('ticket-type-label').textContent = TICKET_MASTER[state.type] || state.type;
   const pic = state.profile?.pictureUrl;
   if (pic) {
     document.getElementById('avatar').innerHTML = `<img src="${pic}" alt="${name}">`;
@@ -406,40 +351,19 @@ function renderUser() {
   }
 }
 
-// ===== チケット読み込み =====
 async function loadTickets() {
   try {
-    const res = await fetch(GAS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        apiKey: API_KEY,
-        action: 'list',
-        userId: state.userId,
-      }),
-    });
-    const data = await res.json();
-
-    if (data.status !== 200) {
-      showError(data.error || 'チケット情報の取得に失敗しました');
-      return;
-    }
-
-    // 該当券種を探す
-    const tickets = data.tickets || [];
-    state.ticket  = tickets.find(t => t.type === state.type) || null;
-
+    const data = await callGAS({ action: 'list', userId: state.userId });
+    if (data.status !== 200) { showError(data.error || '取得失敗'); return; }
+    state.ticket = (data.tickets || []).find(t => t.type === state.type) || null;
     renderTicket();
-
   } catch (err) {
     showError('通信エラー: ' + err.message);
   }
 }
 
-// ===== チケット描画 =====
 function renderTicket() {
   const area = document.getElementById('ticket-area');
-
   if (!state.ticket) {
     area.innerHTML = `
       <div class="empty-state">
@@ -450,21 +374,18 @@ function renderTicket() {
     return;
   }
 
-  const t         = state.ticket;
-  const pct       = t.qty > 0 ? Math.round(t.remaining / t.qty * 100) : 0;
-  const isExpired = t.expired;
-  const isLow     = !isExpired && t.daysLeft !== null && t.daysLeft <= 7;
-  const isEmpty   = t.remaining <= 0;
-
-  // 有効期限バッジ
-  let badgeClass = '';
-  let badgeText  = t.expiresAt ? `有効期限 ${t.expiresAt}` : '';
-  if (isExpired)    { badgeClass = 'expired'; badgeText = '有効期限切れ'; }
-  else if (isLow)   { badgeClass = 'warn';    badgeText = `期限まで残${t.daysLeft}日`; }
-
-  // ボタン状態
+  const t           = state.ticket;
+  const pct         = t.qty > 0 ? Math.round(t.remaining / t.qty * 100) : 0;
+  const isExpired   = t.expired;
+  const isLow       = !isExpired && t.daysLeft !== null && t.daysLeft <= 7;
+  const isEmpty     = t.remaining <= 0;
   const btnDisabled = isExpired || isEmpty || state.processing;
   const btnText     = isExpired ? '有効期限切れ' : isEmpty ? '残枚数なし' : '1回使用する';
+
+  let badgeClass = '';
+  let badgeText  = t.expiresAt ? `有効期限 ${t.expiresAt}` : '';
+  if (isExpired) { badgeClass = 'expired'; badgeText = '有効期限切れ'; }
+  else if (isLow){ badgeClass = 'warn';    badgeText = `期限まで残${t.daysLeft}日`; }
 
   area.innerHTML = `
     <div class="ticket-card${!btnDisabled ? ' active' : ''}">
@@ -475,29 +396,25 @@ function renderTicket() {
         </div>
         ${badgeText ? `<span class="expiry-badge ${badgeClass}">${badgeText}</span>` : ''}
       </div>
-
       <div class="remaining-wrap">
-        <div class="remaining-num" id="remaining-num">${t.remaining}</div>
+        <div class="remaining-num">${t.remaining}</div>
         <div class="remaining-unit">回</div>
         <div class="remaining-total">/ ${t.qty}回</div>
       </div>
-
       <div class="progress-track">
         <div class="progress-fill" style="width:${pct}%"></div>
       </div>
-
       <button class="use-btn" id="use-btn" ${btnDisabled ? 'disabled' : ''} onclick="openModal()">
         ${btnText}
       </button>
     </div>`;
 }
 
-// ===== モーダル =====
 function openModal() {
   if (!state.ticket || state.processing) return;
   const t = state.ticket;
   document.getElementById('modal-ticket-name').textContent = t.label;
-  document.getElementById('modal-remaining').textContent   = `現在の残枚数：${t.remaining}回 → 使用後：${t.remaining - 1}回`;
+  document.getElementById('modal-remaining').textContent   = `現在 ${t.remaining}回 → 使用後 ${t.remaining - 1}回`;
   document.getElementById('modal').classList.add('show');
 }
 
@@ -510,46 +427,34 @@ document.getElementById('btn-confirm').addEventListener('click', async () => {
   closeModal();
   await useTicket();
 });
-
-// モーダル外タップで閉じる
 document.getElementById('modal').addEventListener('click', e => {
   if (e.target === document.getElementById('modal')) closeModal();
 });
 
-// ===== 1回消費 =====
 async function useTicket() {
   if (state.processing) return;
   state.processing = true;
 
   const btn = document.getElementById('use-btn');
-  if (btn) { btn.disabled = true; btn.classList.add('loading'); btn.textContent = '処理中...'; }
+  if (btn) { btn.disabled = true; btn.textContent = '処理中...'; }
 
-  // 冪等キー（タブのセッションで一意）
   const idempotencyKey = `${state.userId}-${state.type}-${Date.now()}`;
 
   try {
-    const res = await fetch(GAS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        apiKey: API_KEY,
-        action: 'use',
-        userId: state.userId,
-        type:   state.type,
-        idempotencyKey,
-      }),
+    const data = await callGAS({
+      action: 'use',
+      userId: state.userId,
+      type:   state.type,
+      idempotencyKey,
     });
-    const data = await res.json();
 
     if (data.status === 200) {
-      // 残枚数を更新
       state.ticket.remaining = data.remaining;
       showDone(data.remaining);
     } else {
       showError(data.error || '消費処理に失敗しました');
       renderTicket();
     }
-
   } catch (err) {
     showError('通信エラー: ' + err.message);
     renderTicket();
@@ -558,15 +463,11 @@ async function useTicket() {
   }
 }
 
-// ===== 完了画面 =====
 function showDone(remaining) {
-  const label = state.ticket?.label || '';
-  document.getElementById('done-ticket-name').textContent = label;
+  document.getElementById('done-ticket-name').textContent = state.ticket?.label || '';
   document.getElementById('done-remaining').textContent   =
     remaining > 0 ? `残り ${remaining} 回` : '残枚数がなくなりました';
   document.getElementById('done-screen').classList.add('show');
-
-  // 背景のカードも更新しておく
   renderTicket();
 }
 
@@ -574,7 +475,6 @@ function closeDone() {
   document.getElementById('done-screen').classList.remove('show');
 }
 
-// ===== ユーティリティ =====
 function showError(msg) {
   const el = document.getElementById('error-box');
   el.textContent = msg;
@@ -584,7 +484,6 @@ function showError(msg) {
 function show(id) { document.getElementById(id).style.display = ''; }
 function hide(id) { document.getElementById(id).style.display = 'none'; }
 
-// ===== 起動 =====
 init();
 </script>
 </body>
