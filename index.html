@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>回数券</title>
 
-<script src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
-
 <style>
 body {
   font-family: sans-serif;
@@ -38,13 +36,12 @@ button {
 // ======================
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbw4dSDoPtEr88njDBASOKmqaZrYCXEg4ZCnV7_PhYNQpA-EFuK_PbkCnk10ypMn6ya8Yw/exec';
 const API_KEY = 'salon-api-key-2025';
-const LIFF_ID = '2009640952-lBudTrLt';
 
 // ======================
 // 状態
 // ======================
 let state = {
-  userId: null,
+  userId: 'Uf8fc1243f3e8ffed6509b594660c679e', // ←固定（開発用）
   ticket: null
 };
 
@@ -55,7 +52,6 @@ async function callAPI(body) {
   const res = await fetch(GAS_URL, {
     method: 'POST',
     headers: {
-      // 🔥 これ重要（CORS回避）
       'Content-Type': 'text/plain'
     },
     body: JSON.stringify({
@@ -68,21 +64,11 @@ async function callAPI(body) {
 }
 
 // ======================
-// 初期化
+// 初期化（LIFFなし版）
 // ======================
 async function init() {
   try {
-    await liff.init({ liffId: LIFF_ID });
-
-    if (!liff.isLoggedIn()) {
-      liff.login();
-      return;
-    }
-
-    const profile = await liff.getProfile();
-    state.userId = profile.userId;
-
-    document.getElementById('user').innerText = profile.displayName;
+    document.getElementById('user').innerText = 'テストユーザー';
 
     await loadTickets();
 
