@@ -1,177 +1,24 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>回数券</title>
+function listTickets(data, config) {
+  const ss = SpreadsheetApp.openById(config.SHEET_ID);
+  const sheet = ss.getSheetByName('tickets');
+  const rows = sheet.getDataRange().getValues();
 
-<script src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
+  const tickets = [];
 
-<style>
-body {
-  font-family: sans-serif;
-  padding: 20px;
-}
-button {
-  padding: 12px;
-  width: 100%;
-  margin-top: 20px;
-}
-.error {
-  color: red;
-}
-</style>
-</head>
+  for (let i = 1; i < rows.length; i++) {
+    const sheetUserId = String(rows[i][0]).trim();
+    const reqUserId = String(data.userId).trim();
 
-<body>
+    // ★ 修正ポイント（完全一致やめる）
+    if (!sheetUserId.includes(reqUserId)) continue;
 
-<h2>回数券</h2>
-<div id="user"></div>
-<div id="ticket"></div>
-<div class="error" id="error"></div>
-
-<button id="useBtn" onclick="useTicket()">1回使う</button>
-
-<script>
-// ======================
-// 設定
-// ======================
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbw4dSDoPtEr88njDBASOKmqaZrYCXEg4ZCnV7_PhYNQpA-EFuK_PbkCnk10ypMn6ya8Yw/exec';
-const API_KEY = 'salon-api-key-2025';
-const LIFF_ID = '2009640952-lBudTrLt';
-
-// ======================
-// 状態
-// ======================
-let state = {
-  userId: null,
-  ticket: null
-};
-
-// ======================
-// API呼び出し
-// ======================
-async function callAPI(body) {
-  const res = await fetch(GAS_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'text/plain'
-    },
-    body: JSON.stringify({
-      apiKey: API_KEY,
-      ...body
-    })
-  });
-
-  return res.json();
-}
-
-// ======================
-// 初期化（LIFF版）
-// ======================
-async function init() {
-  try {
-    await liff.init({ liffId: LIFF_ID });
-
-    if (!liff.isLoggedIn()) {
-      liff.login();
-      return;
-    }
-
-    const profile = await liff.getProfile();
-    state.userId = profile.userId;
-
-    document.getElementById('user').innerText = profile.displayName;
-
-    await loadTickets();
-
-  } catch (e) {
-    showError(e.message);
-  }
-}
-
-// ======================
-// チケット取得
-// ======================
-async function loadTickets() {
-  try {
-    clearError();
-
-    const data = await callAPI({
-      action: 'list',
-      userId: state.userId
+    tickets.push({
+      type: rows[i][1],
+      qty: rows[i][2],
+      remaining: Number(rows[i][3]),
+      expiresAt: new Date(rows[i][4]),
     });
-
-    if (data.status !== 200) {
-      showError(data.error);
-      return;
-    }
-
-    // ★ 修正ポイント：自分のチケットを探す
-    const t = data.tickets.find(ticket =>
-      ticket.type.startsWith('face') && ticket.remaining > 0
-    );
-
-    if (!t) {
-      document.getElementById('ticket').innerText = 'チケットなし';
-      return;
-    }
-
-    state.ticket = t;
-
-    document.getElementById('ticket').innerText =
-      `残り：${t.remaining}回`;
-
-  } catch (e) {
-    showError('通信失敗');
   }
+
+  return res({ status: 200, tickets });
 }
-
-// ======================
-// 使用
-// ======================
-async function useTicket() {
-  try {
-    clearError();
-
-    const btn = document.getElementById('useBtn');
-    btn.disabled = true;
-
-    const data = await callAPI({
-      action: 'use',
-      userId: state.userId,
-      type: 'face'
-    });
-
-    if (data.status === 200) {
-      alert('使用しました');
-      await loadTickets();
-    } else {
-      showError(data.error);
-    }
-
-    btn.disabled = false;
-
-  } catch (e) {
-    showError('通信失敗');
-    document.getElementById('useBtn').disabled = false;
-  }
-}
-
-// ======================
-// エラー
-// ======================
-function showError(msg) {
-  document.getElementById('error').innerText = msg;
-}
-
-function clearError() {
-  document.getElementById('error').innerText = '';
-}
-
-// ======================
-init();
-</script>
-
-</body>
-</html>
