@@ -22,43 +22,31 @@
     --radius:    16px;
     --radius-sm: 10px;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
   body {
     font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
-    background: var(--cream);
-    color: var(--ink);
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
+    background: var(--cream); color: var(--ink);
+    min-height: 100dvh; display: flex; flex-direction: column;
   }
 
+  /* ローディング */
   #loading {
-    position: fixed; inset: 0;
-    background: var(--cream);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
+    position: fixed; inset: 0; background: var(--cream);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
     gap: 16px; z-index: 100;
   }
   .spinner {
     width: 36px; height: 36px;
-    border: 3px solid var(--green-bg);
-    border-top-color: var(--green);
-    border-radius: 50%;
-    animation: spin .8s linear infinite;
+    border: 3px solid var(--green-bg); border-top-color: var(--green);
+    border-radius: 50%; animation: spin .8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
   #loading p { font-size: 14px; color: var(--ink-lt); }
 
-  header {
-    padding: 20px 20px 0;
-    display: flex; align-items: center; gap: 10px;
-  }
+  /* ヘッダー */
+  header { padding: 20px 20px 0; display: flex; align-items: center; gap: 10px; }
   .logo {
-    width: 32px; height: 32px;
-    background: var(--green);
-    border-radius: 8px;
+    width: 32px; height: 32px; background: var(--green); border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
   }
   .logo svg { width: 18px; height: 18px; fill: white; }
@@ -66,67 +54,82 @@
 
   main { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
 
+  /* ユーザーバー */
   .user-bar {
     display: flex; align-items: center; gap: 10px;
-    background: white;
-    border: 1px solid #EBEBEB;
-    border-radius: var(--radius-sm);
-    padding: 10px 14px;
+    background: white; border: 1px solid #EBEBEB;
+    border-radius: var(--radius-sm); padding: 10px 14px;
   }
   .avatar {
     width: 36px; height: 36px; border-radius: 50%;
-    background: var(--green-bg);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 15px; font-weight: 700; color: var(--green);
-    overflow: hidden; flex-shrink: 0;
+    background: var(--green-bg); display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700; color: var(--green); overflow: hidden; flex-shrink: 0;
   }
   .avatar img { width: 100%; height: 100%; object-fit: cover; }
   .user-name { font-size: 14px; font-weight: 600; color: var(--ink); }
   .user-sub  { font-size: 11px; color: var(--ink-lt); margin-top: 1px; }
 
+  /* エラー */
+  .error-box {
+    background: var(--red-bg); border: 1px solid #F5C6C2;
+    border-radius: var(--radius-sm); padding: 14px 16px;
+    font-size: 13px; color: var(--red); line-height: 1.6; display: none;
+  }
+  .error-box.show { display: block; }
+
+  /* ===== 顧客登録画面 ===== */
+  #register-screen {
+    background: white; border: 1.5px solid #EBEBEB;
+    border-radius: var(--radius); padding: 24px 20px;
+  }
+  .register-title { font-size: 18px; font-weight: 800; color: var(--ink); margin-bottom: 8px; letter-spacing: -.02em; }
+  .register-desc  { font-size: 13px; color: var(--ink-mid); line-height: 1.7; margin-bottom: 20px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--ink-lt); margin-bottom: 6px; display: block; letter-spacing: .04em; }
+  .form-input {
+    width: 100%; padding: 14px 16px; border: 1.5px solid #E0E0E0;
+    border-radius: var(--radius-sm); font-size: 16px; color: var(--ink);
+    background: white; margin-bottom: 6px; transition: border-color .15s;
+    font-family: inherit;
+  }
+  .form-input:focus { outline: none; border-color: var(--green); }
+  .form-hint { font-size: 11px; color: var(--ink-lt); margin-bottom: 20px; }
+  .form-error { font-size: 12px; color: var(--red); margin-bottom: 12px; display: none; }
+  .form-error.show { display: block; }
+
+  /* 確認ステップ */
+  .confirm-box {
+    background: var(--green-bg); border-radius: var(--radius-sm);
+    padding: 16px; margin-bottom: 20px;
+  }
+  .confirm-label { font-size: 11px; color: var(--green-mid); margin-bottom: 4px; }
+  .confirm-name  { font-size: 20px; font-weight: 800; color: var(--green); }
+
+  /* チケットカード */
   .ticket-card {
-    background: white;
-    border: 1.5px solid #EBEBEB;
-    border-radius: var(--radius);
-    padding: 20px;
-    transition: border-color .2s;
+    background: white; border: 1.5px solid #EBEBEB;
+    border-radius: var(--radius); padding: 20px; transition: border-color .2s;
   }
   .ticket-card.active { border-color: var(--green-lt); }
-
   .ticket-header {
     display: flex; justify-content: space-between; align-items: flex-start;
     margin-bottom: 16px;
   }
   .ticket-label { font-size: 13px; color: var(--ink-lt); font-weight: 500; }
   .ticket-name  { font-size: 20px; font-weight: 800; color: var(--ink); margin-top: 3px; letter-spacing: -.02em; }
-
   .expiry-badge {
-    font-size: 11px; padding: 4px 9px;
-    border-radius: 20px; font-weight: 600;
-    background: var(--green-bg); color: var(--green);
-    white-space: nowrap;
+    font-size: 11px; padding: 4px 9px; border-radius: 20px; font-weight: 600;
+    background: var(--green-bg); color: var(--green); white-space: nowrap;
   }
   .expiry-badge.warn    { background: var(--amber-bg); color: var(--amber); }
   .expiry-badge.expired { background: var(--red-bg);   color: var(--red); }
-
-  .remaining-wrap {
-    display: flex; align-items: baseline; gap: 6px;
-    margin-bottom: 12px;
-  }
+  .remaining-wrap { display: flex; align-items: baseline; gap: 6px; margin-bottom: 12px; }
   .remaining-num   { font-size: 56px; font-weight: 900; line-height: 1; color: var(--green); letter-spacing: -.04em; }
   .remaining-unit  { font-size: 16px; color: var(--ink-mid); font-weight: 600; }
   .remaining-total { font-size: 13px; color: var(--ink-lt); }
+  .progress-track  { height: 6px; background: var(--green-bg); border-radius: 3px; overflow: hidden; margin-bottom: 16px; }
+  .progress-fill   { height: 100%; background: var(--green); border-radius: 3px; transition: width .6s cubic-bezier(.4,0,.2,1); }
 
-  .progress-track {
-    height: 6px; background: var(--green-bg);
-    border-radius: 3px; overflow: hidden; margin-bottom: 16px;
-  }
-  .progress-fill {
-    height: 100%; background: var(--green);
-    border-radius: 3px;
-    transition: width .6s cubic-bezier(.4,0,.2,1);
-  }
-
+  /* 空状態 */
   .empty-state {
     background: white; border: 1.5px solid #EBEBEB;
     border-radius: var(--radius); padding: 32px 20px; text-align: center;
@@ -135,110 +138,83 @@
   .empty-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
   .empty-desc  { font-size: 13px; color: var(--ink-lt); line-height: 1.6; }
 
-  .error-box {
-    background: var(--red-bg); border: 1px solid #F5C6C2;
-    border-radius: var(--radius-sm); padding: 14px 16px;
-    font-size: 13px; color: var(--red); line-height: 1.6;
-    display: none;
-  }
-  .error-box.show { display: block; }
-
-  .use-btn {
-    width: 100%; padding: 17px;
-    background: var(--green);
+  /* ボタン共通 */
+  .btn-primary {
+    width: 100%; padding: 17px; background: var(--green);
     color: white; font-size: 16px; font-weight: 700;
-    border: none; border-radius: var(--radius-sm);
-    cursor: pointer; letter-spacing: .03em;
-    transition: background .15s, transform .1s;
-    position: relative; overflow: hidden;
+    border: none; border-radius: var(--radius-sm); cursor: pointer;
+    letter-spacing: .03em; transition: background .15s, transform .1s;
+    font-family: inherit;
   }
-  .use-btn:active:not(:disabled) { transform: scale(.98); }
-  .use-btn:disabled { background: #C8C8C8; cursor: not-allowed; opacity: .7; }
+  .btn-primary:active:not(:disabled) { transform: scale(.98); }
+  .btn-primary:disabled { background: #C8C8C8; cursor: not-allowed; opacity: .7; }
+  .btn-secondary {
+    width: 100%; padding: 14px; background: none;
+    color: var(--ink-lt); font-size: 15px; font-weight: 600;
+    border: 1px solid #EBEBEB; border-radius: var(--radius-sm);
+    cursor: pointer; margin-top: 10px; font-family: inherit;
+  }
 
+  /* モーダル */
   .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.5);
-    display: flex; align-items: flex-end;
-    z-index: 200;
-    opacity: 0; pointer-events: none;
-    transition: opacity .25s;
+    position: fixed; inset: 0; background: rgba(0,0,0,.5);
+    display: flex; align-items: flex-end; z-index: 200;
+    opacity: 0; pointer-events: none; transition: opacity .25s;
   }
   .modal-overlay.show { opacity: 1; pointer-events: all; }
-
   .modal {
-    width: 100%; background: white;
-    border-radius: 24px 24px 0 0;
+    width: 100%; background: white; border-radius: 24px 24px 0 0;
     padding: 28px 24px 40px;
-    transform: translateY(100%);
-    transition: transform .3s cubic-bezier(.4,0,.2,1);
+    transform: translateY(100%); transition: transform .3s cubic-bezier(.4,0,.2,1);
   }
   .modal-overlay.show .modal { transform: translateY(0); }
-
-  .modal-handle {
-    width: 40px; height: 4px; background: #E0E0E0;
-    border-radius: 2px; margin: 0 auto 24px;
-  }
-  .modal-title { font-size: 20px; font-weight: 800; color: var(--ink); margin-bottom: 8px; letter-spacing: -.02em; }
-  .modal-desc  { font-size: 14px; color: var(--ink-mid); line-height: 1.7; margin-bottom: 24px; }
-
-  .modal-ticket-info {
-    background: var(--green-bg);
-    border-radius: var(--radius-sm);
-    padding: 16px; margin-bottom: 24px;
-  }
+  .modal-handle { width: 40px; height: 4px; background: #E0E0E0; border-radius: 2px; margin: 0 auto 24px; }
+  .modal-title  { font-size: 20px; font-weight: 800; color: var(--ink); margin-bottom: 8px; letter-spacing: -.02em; }
+  .modal-desc   { font-size: 14px; color: var(--ink-mid); line-height: 1.7; margin-bottom: 24px; }
+  .modal-ticket-info { background: var(--green-bg); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 24px; }
   .modal-ticket-name { font-size: 15px; font-weight: 700; color: var(--green); }
   .modal-remaining   { font-size: 13px; color: var(--green-mid); margin-top: 4px; }
-
-  .modal-btns { display: flex; flex-direction: column; gap: 10px; }
+  .modal-btns        { display: flex; flex-direction: column; gap: 10px; }
   .btn-confirm {
-    padding: 16px; background: var(--green);
-    color: white; font-size: 16px; font-weight: 700;
-    border: none; border-radius: var(--radius-sm);
-    cursor: pointer; transition: transform .1s;
+    padding: 16px; background: var(--green); color: white;
+    font-size: 16px; font-weight: 700; border: none;
+    border-radius: var(--radius-sm); cursor: pointer; transition: transform .1s; font-family: inherit;
   }
   .btn-confirm:active { transform: scale(.98); }
   .btn-cancel {
-    padding: 14px; background: none;
-    color: var(--ink-lt); font-size: 15px; font-weight: 600;
-    border: 1px solid #EBEBEB; border-radius: var(--radius-sm); cursor: pointer;
+    padding: 14px; background: none; color: var(--ink-lt);
+    font-size: 15px; font-weight: 600; border: 1px solid #EBEBEB;
+    border-radius: var(--radius-sm); cursor: pointer; font-family: inherit;
   }
 
+  /* 完了画面 */
   .done-screen {
     position: fixed; inset: 0; background: var(--cream);
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    padding: 32px; z-index: 300;
-    opacity: 0; pointer-events: none;
-    transition: opacity .3s;
+    padding: 32px; z-index: 300; opacity: 0; pointer-events: none; transition: opacity .3s;
   }
   .done-screen.show { opacity: 1; pointer-events: all; }
-
   .done-circle {
-    width: 88px; height: 88px;
-    background: var(--green); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 24px;
+    width: 88px; height: 88px; background: var(--green); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 24px;
     animation: scaleIn .4s cubic-bezier(.34,1.56,.64,1) both;
   }
   @keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
   .done-circle svg { width: 44px; height: 44px; stroke: white; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-
   .done-title     { font-size: 26px; font-weight: 900; color: var(--ink); margin-bottom: 8px; letter-spacing: -.03em; }
   .done-sub       { font-size: 15px; color: var(--ink-mid); margin-bottom: 6px; }
   .done-remaining { font-size: 14px; color: var(--ink-lt); margin-bottom: 32px; }
   .done-close {
-    padding: 15px 48px; background: var(--green);
-    color: white; font-size: 15px; font-weight: 700;
-    border: none; border-radius: var(--radius-sm); cursor: pointer;
+    padding: 15px 48px; background: var(--green); color: white;
+    font-size: 15px; font-weight: 700; border: none;
+    border-radius: var(--radius-sm); cursor: pointer; font-family: inherit;
   }
 </style>
 </head>
 <body>
 
-<div id="loading">
-  <div class="spinner"></div>
-  <p>読み込み中...</p>
-</div>
+<div id="loading"><div class="spinner"></div><p>読み込み中...</p></div>
 
 <header>
   <div class="logo">
@@ -252,13 +228,14 @@
     <div class="avatar" id="avatar"><span id="avatar-initials"></span></div>
     <div>
       <div class="user-name" id="user-name">読み込み中...</div>
-      <div class="user-sub"  id="ticket-type-label"></div>
+      <div class="user-sub"  id="user-sub"></div>
     </div>
   </div>
   <div class="error-box" id="error-box"></div>
-  <div id="ticket-area"></div>
+  <div id="content-area"></div>
 </main>
 
+<!-- 消費確認モーダル -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -275,6 +252,7 @@
   </div>
 </div>
 
+<!-- 消費完了画面 -->
 <div class="done-screen" id="done-screen">
   <div class="done-circle">
     <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
@@ -286,25 +264,26 @@
 </div>
 
 <script>
-// ===== 設定（自分の値に変更済み） =====
+// ===== 設定 =====
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbz6-nE1CbJdGxMgs-Hn1503yGJSdyYfL5WlEzPk9bEBFAnTaJMcZj8wMIGYt_Bq5WEQhg/exec';
 const API_KEY = 'salon-api-key-2025';
 const LIFF_ID = '2009640952-lBudTrLt';
+const BOOKING_URL = 'https://example.com/booking'; // ← 予約URLに差し替え
 
 const TICKET_MASTER = {
-  face: '鍼（お顔）',
-  body: '鍼（お体）',
-  herb: 'ハーブピーリング',
-  ems:  '楽トレ(EMS)',
+  face: '鍼（お顔）', body: '鍼（お体）',
+  herb: 'ハーブピーリング', ems: '楽トレ(EMS)',
 };
 
 let state = {
   userId: null, profile: null,
   type: null, qty: null,
   ticket: null, processing: false,
+  registered: false, customerName: null,
+  step: 'loading', // loading | register-input | register-confirm | ticket
 };
 
-// ===== GAS呼び出し（GETリクエスト＝CORS問題なし） =====
+// ===== GAS呼び出し（GETリクエスト） =====
 async function callGAS(params) {
   params.apiKey = API_KEY;
   const query = Object.entries(params)
@@ -327,8 +306,22 @@ async function init() {
     state.profile = await liff.getProfile();
     state.userId  = state.profile.userId;
 
-    renderUser();
-    await loadTickets();
+    renderUserBar();
+
+    // 顧客登録済みか確認
+    const data = await callGAS({ action: 'checkUser', userId: state.userId });
+
+    if (data.status === 200 && data.registered) {
+      // 登録済み → チケット画面へ
+      state.registered   = true;
+      state.customerName = data.customerName;
+      document.getElementById('user-sub').textContent = data.customerName;
+      await loadTickets();
+    } else {
+      // 未登録 → 顧客登録画面へ
+      state.registered = false;
+      renderRegisterInput();
+    }
 
     hide('loading');
     show('main');
@@ -339,10 +332,10 @@ async function init() {
   }
 }
 
-function renderUser() {
+// ===== ユーザーバー描画 =====
+function renderUserBar() {
   const name = state.profile?.displayName || 'お客様';
   document.getElementById('user-name').textContent = name;
-  document.getElementById('ticket-type-label').textContent = TICKET_MASTER[state.type] || state.type;
   const pic = state.profile?.pictureUrl;
   if (pic) {
     document.getElementById('avatar').innerHTML = `<img src="${pic}" alt="${name}">`;
@@ -351,10 +344,94 @@ function renderUser() {
   }
 }
 
+// ===== 顧客登録：入力画面 =====
+function renderRegisterInput() {
+  state.step = 'register-input';
+  const area = document.getElementById('content-area');
+  area.innerHTML = `
+    <div id="register-screen">
+      <div class="register-title">はじめまして</div>
+      <div class="register-desc">初回ご利用のお客様は、お名前の登録をお願いします。カタカナでフルネームをご入力ください。</div>
+      <label class="form-label">お名前（カタカナ）</label>
+      <input class="form-input" type="text" id="nameInput" placeholder="例：スズキ マリコ"
+        inputmode="text" autocomplete="off" oninput="validateName(this.value)">
+      <div class="form-error" id="name-error"></div>
+      <div class="form-hint">※ カタカナ・スペース（全角半角）のみ入力できます</div>
+      <button class="btn-primary" id="reg-next-btn" onclick="goToRegisterConfirm()" disabled>次へ</button>
+    </div>`;
+}
+
+function validateName(val) {
+  const btn = document.getElementById('reg-next-btn');
+  const err = document.getElementById('name-error');
+  const cleaned = val.trim();
+
+  // カタカナ・スペース（全角半角）のみ許可
+  const valid = /^[ァ-ヶーｦ-ﾟ\u30A0\s　]+$/.test(cleaned) && cleaned.length >= 2;
+
+  if (cleaned.length > 0 && !valid) {
+    err.textContent = 'カタカナで入力してください（例：スズキ マリコ）';
+    err.classList.add('show');
+  } else {
+    err.classList.remove('show');
+  }
+  btn.disabled = !valid;
+}
+
+// ===== 顧客登録：確認画面 =====
+function goToRegisterConfirm() {
+  const name = document.getElementById('nameInput').value.trim();
+  state.customerName = name;
+  state.step = 'register-confirm';
+  const area = document.getElementById('content-area');
+  area.innerHTML = `
+    <div id="register-screen">
+      <div class="register-title">登録内容の確認</div>
+      <div class="register-desc">以下の内容で登録します。よろしければ「登録する」をタップしてください。</div>
+      <div class="confirm-box">
+        <div class="confirm-label">お名前（カタカナ）</div>
+        <div class="confirm-name">${name}</div>
+      </div>
+      <button class="btn-primary" id="reg-btn" onclick="doRegister()">登録する</button>
+      <button class="btn-secondary" onclick="renderRegisterInput()">修正する</button>
+    </div>`;
+}
+
+// ===== 顧客登録：実行 =====
+async function doRegister() {
+  const btn = document.getElementById('reg-btn');
+  btn.disabled = true;
+  btn.textContent = '登録中...';
+
+  try {
+    const data = await callGAS({
+      action:       'registerUser',
+      userId:       state.userId,
+      customerName: encodeURIComponent(state.customerName),
+    });
+
+    if (data.status === 200) {
+      state.registered = true;
+      document.getElementById('user-sub').textContent = state.customerName;
+      await loadTickets();
+    } else {
+      showError(data.error || '登録に失敗しました');
+      btn.disabled = false;
+      btn.textContent = '登録する';
+    }
+  } catch (err) {
+    showError('通信エラー: ' + err.message);
+    btn.disabled = false;
+    btn.textContent = '登録する';
+  }
+}
+
+// ===== チケット読み込み =====
 async function loadTickets() {
+  state.step = 'ticket';
   try {
     const data = await callGAS({ action: 'list', userId: state.userId });
-    if (data.status !== 200) {showError(JSON.stringify(data));return;}
+    if (data.status !== 200) { showError(data.error || '取得失敗'); return; }
     state.ticket = (data.tickets || []).find(t => t.type === state.type) || null;
     renderTicket();
   } catch (err) {
@@ -362,8 +439,9 @@ async function loadTickets() {
   }
 }
 
+// ===== チケット描画 =====
 function renderTicket() {
-  const area = document.getElementById('ticket-area');
+  const area = document.getElementById('content-area');
   if (!state.ticket) {
     area.innerHTML = `
       <div class="empty-state">
@@ -373,7 +451,6 @@ function renderTicket() {
       </div>`;
     return;
   }
-
   const t           = state.ticket;
   const pct         = t.qty > 0 ? Math.round(t.remaining / t.qty * 100) : 0;
   const isExpired   = t.expired;
@@ -381,9 +458,7 @@ function renderTicket() {
   const isEmpty     = t.remaining <= 0;
   const btnDisabled = isExpired || isEmpty || state.processing;
   const btnText     = isExpired ? '有効期限切れ' : isEmpty ? '残枚数なし' : '1回使用する';
-
-  let badgeClass = '';
-  let badgeText  = t.expiresAt ? `有効期限 ${t.expiresAt}` : '';
+  let badgeClass = '', badgeText = t.expiresAt ? `有効期限 ${t.expiresAt}` : '';
   if (isExpired) { badgeClass = 'expired'; badgeText = '有効期限切れ'; }
   else if (isLow){ badgeClass = 'warn';    badgeText = `期限まで残${t.daysLeft}日`; }
 
@@ -404,12 +479,13 @@ function renderTicket() {
       <div class="progress-track">
         <div class="progress-fill" style="width:${pct}%"></div>
       </div>
-      <button class="use-btn" id="use-btn" ${btnDisabled ? 'disabled' : ''} onclick="openModal()">
+      <button class="btn-primary" id="use-btn" ${btnDisabled ? 'disabled' : ''} onclick="openModal()">
         ${btnText}
       </button>
     </div>`;
 }
 
+// ===== モーダル =====
 function openModal() {
   if (!state.ticket || state.processing) return;
   const t = state.ticket;
@@ -417,37 +493,20 @@ function openModal() {
   document.getElementById('modal-remaining').textContent   = `現在 ${t.remaining}回 → 使用後 ${t.remaining - 1}回`;
   document.getElementById('modal').classList.add('show');
 }
-
-function closeModal() {
-  document.getElementById('modal').classList.remove('show');
-}
-
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
 document.getElementById('btn-cancel').addEventListener('click', closeModal);
-document.getElementById('btn-confirm').addEventListener('click', async () => {
-  closeModal();
-  await useTicket();
-});
-document.getElementById('modal').addEventListener('click', e => {
-  if (e.target === document.getElementById('modal')) closeModal();
-});
+document.getElementById('btn-confirm').addEventListener('click', async () => { closeModal(); await useTicket(); });
+document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) closeModal(); });
 
+// ===== 1回消費 =====
 async function useTicket() {
   if (state.processing) return;
   state.processing = true;
-
   const btn = document.getElementById('use-btn');
   if (btn) { btn.disabled = true; btn.textContent = '処理中...'; }
-
   const idempotencyKey = `${state.userId}-${state.type}-${Date.now()}`;
-
   try {
-    const data = await callGAS({
-      action: 'use',
-      userId: state.userId,
-      type:   state.type,
-      idempotencyKey,
-    });
-
+    const data = await callGAS({ action: 'use', userId: state.userId, type: state.type, idempotencyKey });
     if (data.status === 200) {
       state.ticket.remaining = data.remaining;
       showDone(data.remaining);
@@ -465,22 +524,16 @@ async function useTicket() {
 
 function showDone(remaining) {
   document.getElementById('done-ticket-name').textContent = state.ticket?.label || '';
-  document.getElementById('done-remaining').textContent   =
-    remaining > 0 ? `残り ${remaining} 回` : '残枚数がなくなりました';
+  document.getElementById('done-remaining').textContent   = remaining > 0 ? `残り ${remaining} 回` : '残枚数がなくなりました';
   document.getElementById('done-screen').classList.add('show');
   renderTicket();
 }
-
-function closeDone() {
-  document.getElementById('done-screen').classList.remove('show');
-}
+function closeDone() { document.getElementById('done-screen').classList.remove('show'); }
 
 function showError(msg) {
   const el = document.getElementById('error-box');
-  el.textContent = msg;
-  el.classList.add('show');
+  el.textContent = msg; el.classList.add('show');
 }
-
 function show(id) { document.getElementById(id).style.display = ''; }
 function hide(id) { document.getElementById(id).style.display = 'none'; }
 
