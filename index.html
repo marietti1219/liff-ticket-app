@@ -354,7 +354,7 @@ function renderUser() {
 async function loadTickets() {
   try {
     const data = await callGAS({ action: 'list', userId: state.userId });
-    if (data.status !== 200) { showError(data.error || '取得失敗'); return; }
+    if (data.status !== 200) {showError(JSON.stringify(data));return;}
     state.ticket = (data.tickets || []).find(t => t.type === state.type) || null;
     renderTicket();
   } catch (err) {
