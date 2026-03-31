@@ -2,153 +2,489 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>回数券</title>
-
 <script src="https://static.line-scdn.net/liff/edge/versions/2.22.3/sdk.js"></script>
-
 <style>
-body {
-  font-family: sans-serif;
-  padding: 20px;
-}
-button {
-  padding: 12px;
-  width: 100%;
-  margin-top: 20px;
-}
-.error {
-  color: red;
-}
+  :root {
+    --green:     #2D6A4F;
+    --green-mid: #40916C;
+    --green-lt:  #74C69D;
+    --green-bg:  #D8F3DC;
+    --cream:     #FAFAF7;
+    --ink:       #1A1A1A;
+    --ink-mid:   #4A4A4A;
+    --ink-lt:    #9A9A9A;
+    --red:       #C1392B;
+    --red-bg:    #FDECEA;
+    --amber:     #B7791F;
+    --amber-bg:  #FEFCE8;
+    --radius:    16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #loading {
+    position: fixed; inset: 0;
+    background: var(--cream);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px; z-index: 100;
+  }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--green-bg);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #loading p { font-size: 14px; color: var(--ink-lt); }
+
+  header {
+    padding: 20px 20px 0;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo {
+    width: 32px; height: 32px;
+    background: var(--green);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo svg { width: 18px; height: 18px; fill: white; }
+  header h1 { font-size: 15px; font-weight: 700; color: var(--green); letter-spacing: .05em; }
+
+  main { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+  .user-bar {
+    display: flex; align-items: center; gap: 10px;
+    background: white;
+    border: 1px solid #EBEBEB;
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+  }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--green-bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700; color: var(--green);
+    overflow: hidden; flex-shrink: 0;
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .user-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .user-sub  { font-size: 11px; color: var(--ink-lt); margin-top: 1px; }
+
+  .ticket-card {
+    background: white;
+    border: 1.5px solid #EBEBEB;
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: border-color .2s;
+  }
+  .ticket-card.active { border-color: var(--green-lt); }
+
+  .ticket-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .ticket-label { font-size: 13px; color: var(--ink-lt); font-weight: 500; }
+  .ticket-name  { font-size: 20px; font-weight: 800; color: var(--ink); margin-top: 3px; letter-spacing: -.02em; }
+
+  .expiry-badge {
+    font-size: 11px; padding: 4px 9px;
+    border-radius: 20px; font-weight: 600;
+    background: var(--green-bg); color: var(--green);
+    white-space: nowrap;
+  }
+  .expiry-badge.warn    { background: var(--amber-bg); color: var(--amber); }
+  .expiry-badge.expired { background: var(--red-bg);   color: var(--red); }
+
+  .remaining-wrap {
+    display: flex; align-items: baseline; gap: 6px;
+    margin-bottom: 12px;
+  }
+  .remaining-num   { font-size: 56px; font-weight: 900; line-height: 1; color: var(--green); letter-spacing: -.04em; }
+  .remaining-unit  { font-size: 16px; color: var(--ink-mid); font-weight: 600; }
+  .remaining-total { font-size: 13px; color: var(--ink-lt); }
+
+  .progress-track {
+    height: 6px; background: var(--green-bg);
+    border-radius: 3px; overflow: hidden; margin-bottom: 16px;
+  }
+  .progress-fill {
+    height: 100%; background: var(--green);
+    border-radius: 3px;
+    transition: width .6s cubic-bezier(.4,0,.2,1);
+  }
+
+  .empty-state {
+    background: white; border: 1.5px solid #EBEBEB;
+    border-radius: var(--radius); padding: 32px 20px; text-align: center;
+  }
+  .empty-icon  { font-size: 40px; margin-bottom: 12px; }
+  .empty-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  .empty-desc  { font-size: 13px; color: var(--ink-lt); line-height: 1.6; }
+
+  .error-box {
+    background: var(--red-bg); border: 1px solid #F5C6C2;
+    border-radius: var(--radius-sm); padding: 14px 16px;
+    font-size: 13px; color: var(--red); line-height: 1.6;
+    display: none;
+  }
+  .error-box.show { display: block; }
+
+  .use-btn {
+    width: 100%; padding: 17px;
+    background: var(--green);
+    color: white; font-size: 16px; font-weight: 700;
+    border: none; border-radius: var(--radius-sm);
+    cursor: pointer; letter-spacing: .03em;
+    transition: background .15s, transform .1s;
+    position: relative; overflow: hidden;
+  }
+  .use-btn:active:not(:disabled) { transform: scale(.98); }
+  .use-btn:disabled { background: #C8C8C8; cursor: not-allowed; opacity: .7; }
+
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.5);
+    display: flex; align-items: flex-end;
+    z-index: 200;
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s;
+  }
+  .modal-overlay.show { opacity: 1; pointer-events: all; }
+
+  .modal {
+    width: 100%; background: white;
+    border-radius: 24px 24px 0 0;
+    padding: 28px 24px 40px;
+    transform: translateY(100%);
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+  }
+  .modal-overlay.show .modal { transform: translateY(0); }
+
+  .modal-handle {
+    width: 40px; height: 4px; background: #E0E0E0;
+    border-radius: 2px; margin: 0 auto 24px;
+  }
+  .modal-title { font-size: 20px; font-weight: 800; color: var(--ink); margin-bottom: 8px; letter-spacing: -.02em; }
+  .modal-desc  { font-size: 14px; color: var(--ink-mid); line-height: 1.7; margin-bottom: 24px; }
+
+  .modal-ticket-info {
+    background: var(--green-bg);
+    border-radius: var(--radius-sm);
+    padding: 16px; margin-bottom: 24px;
+  }
+  .modal-ticket-name { font-size: 15px; font-weight: 700; color: var(--green); }
+  .modal-remaining   { font-size: 13px; color: var(--green-mid); margin-top: 4px; }
+
+  .modal-btns { display: flex; flex-direction: column; gap: 10px; }
+  .btn-confirm {
+    padding: 16px; background: var(--green);
+    color: white; font-size: 16px; font-weight: 700;
+    border: none; border-radius: var(--radius-sm);
+    cursor: pointer; transition: transform .1s;
+  }
+  .btn-confirm:active { transform: scale(.98); }
+  .btn-cancel {
+    padding: 14px; background: none;
+    color: var(--ink-lt); font-size: 15px; font-weight: 600;
+    border: 1px solid #EBEBEB; border-radius: var(--radius-sm); cursor: pointer;
+  }
+
+  .done-screen {
+    position: fixed; inset: 0; background: var(--cream);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 32px; z-index: 300;
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s;
+  }
+  .done-screen.show { opacity: 1; pointer-events: all; }
+
+  .done-circle {
+    width: 88px; height: 88px;
+    background: var(--green); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 24px;
+    animation: scaleIn .4s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
+  .done-circle svg { width: 44px; height: 44px; stroke: white; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  .done-title     { font-size: 26px; font-weight: 900; color: var(--ink); margin-bottom: 8px; letter-spacing: -.03em; }
+  .done-sub       { font-size: 15px; color: var(--ink-mid); margin-bottom: 6px; }
+  .done-remaining { font-size: 14px; color: var(--ink-lt); margin-bottom: 32px; }
+  .done-close {
+    padding: 15px 48px; background: var(--green);
+    color: white; font-size: 15px; font-weight: 700;
+    border: none; border-radius: var(--radius-sm); cursor: pointer;
+  }
 </style>
 </head>
-
 <body>
 
-<h2>回数券</h2>
-<div id="user"></div>
-<div id="ticket"></div>
-<div class="error" id="error"></div>
+<div id="loading">
+  <div class="spinner"></div>
+  <p>読み込み中...</p>
+</div>
 
-<button id="useBtn" onclick="useTicket()">1回使う</button>
+<header>
+  <div class="logo">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+  </div>
+  <h1>回数券</h1>
+</header>
+
+<main id="main" style="display:none">
+  <div class="user-bar">
+    <div class="avatar" id="avatar"><span id="avatar-initials"></span></div>
+    <div>
+      <div class="user-name" id="user-name">読み込み中...</div>
+      <div class="user-sub"  id="ticket-type-label"></div>
+    </div>
+  </div>
+  <div class="error-box" id="error-box"></div>
+  <div id="ticket-area"></div>
+</main>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">1回使用しますか？</div>
+    <div class="modal-desc">タップすると残枚数が1回減ります。この操作は取り消せません。</div>
+    <div class="modal-ticket-info">
+      <div class="modal-ticket-name" id="modal-ticket-name"></div>
+      <div class="modal-remaining"   id="modal-remaining"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-confirm" id="btn-confirm">使用する</button>
+      <button class="btn-cancel"  id="btn-cancel">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<div class="done-screen" id="done-screen">
+  <div class="done-circle">
+    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+  <div class="done-title">使用しました</div>
+  <div class="done-sub"       id="done-ticket-name"></div>
+  <div class="done-remaining" id="done-remaining"></div>
+  <button class="done-close" onclick="closeDone()">閉じる</button>
+</div>
 
 <script>
+// ===== 設定（自分の値に変更済み） =====
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbw4dSDoPtEr88njDBASOKmqaZrYCXEg4ZCnV7_PhYNQpA-EFuK_PbkCnk10ypMn6ya8Yw/exec';
 const API_KEY = 'salon-api-key-2025';
 const LIFF_ID = '2009640952-lBudTrLt';
 
-let state = {
-  userId: null,
-  ticket: null
+const TICKET_MASTER = {
+  face: '鍼（お顔）',
+  body: '鍼（お体）',
+  herb: 'ハーブピーリング',
+  ems:  '楽トレ(EMS)',
 };
 
-async function callAPI(body) {
-  const res = await fetch(GAS_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'text/plain'
-    },
-    body: JSON.stringify({
-      apiKey: API_KEY,
-      ...body
-    })
-  });
+let state = {
+  userId: null, profile: null,
+  type: null, qty: null,
+  ticket: null, processing: false,
+};
+
+// ===== GAS呼び出し（GETリクエスト＝CORS問題なし） =====
+async function callGAS(params) {
+  params.apiKey = API_KEY;
+  const query = Object.entries(params)
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+    .join('&');
+  const res = await fetch(`${GAS_URL}?${query}`, { method: 'GET' });
   return res.json();
 }
 
+// ===== 初期化 =====
 async function init() {
   try {
+    const params = new URLSearchParams(location.search);
+    state.type = params.get('type') || 'face';
+    state.qty  = params.get('qty');
+
     await liff.init({ liffId: LIFF_ID });
+    if (!liff.isLoggedIn()) { liff.login(); return; }
 
-    if (!liff.isLoggedIn()) {
-      liff.login();
-      return;
-    }
+    state.profile = await liff.getProfile();
+    state.userId  = state.profile.userId;
 
-    const profile = await liff.getProfile();
-    state.userId = profile.userId;
-
-    document.getElementById('user').innerText =
-      `${profile.displayName}`;
-
+    renderUser();
     await loadTickets();
 
-  } catch (e) {
-    showError(e.message);
+    hide('loading');
+    show('main');
+  } catch (err) {
+    showError('初期化エラー: ' + err.message);
+    hide('loading');
+    show('main');
+  }
+}
+
+function renderUser() {
+  const name = state.profile?.displayName || 'お客様';
+  document.getElementById('user-name').textContent = name;
+  document.getElementById('ticket-type-label').textContent = TICKET_MASTER[state.type] || state.type;
+  const pic = state.profile?.pictureUrl;
+  if (pic) {
+    document.getElementById('avatar').innerHTML = `<img src="${pic}" alt="${name}">`;
+  } else {
+    document.getElementById('avatar-initials').textContent = name.charAt(0);
   }
 }
 
 async function loadTickets() {
   try {
-    clearError();
-
-    const data = await callAPI({
-      action: 'list',
-      userId: state.userId
-    });
-
-    if (data.status !== 200) {
-      showError(data.error);
-      return;
-    }
-
-    const t = data.tickets.find(ticket =>
-      ticket.type.startsWith('face') && ticket.remaining > 0
-    );
-
-    if (!t) {
-      document.getElementById('ticket').innerText = 'チケットなし';
-      return;
-    }
-
-    state.ticket = t;
-
-    document.getElementById('ticket').innerText =
-      `残り：${t.remaining}回`;
-
-  } catch (e) {
-    showError('通信失敗');
+    const data = await callGAS({ action: 'list', userId: state.userId });
+    if (data.status !== 200) { showError(data.error || '取得失敗'); return; }
+    state.ticket = (data.tickets || []).find(t => t.type === state.type) || null;
+    renderTicket();
+  } catch (err) {
+    showError('通信エラー: ' + err.message);
   }
 }
 
+function renderTicket() {
+  const area = document.getElementById('ticket-area');
+  if (!state.ticket) {
+    area.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🎫</div>
+        <div class="empty-title">回数券が見つかりません</div>
+        <div class="empty-desc">${TICKET_MASTER[state.type] || state.type}の<br>回数券をご購入ください。</div>
+      </div>`;
+    return;
+  }
+
+  const t           = state.ticket;
+  const pct         = t.qty > 0 ? Math.round(t.remaining / t.qty * 100) : 0;
+  const isExpired   = t.expired;
+  const isLow       = !isExpired && t.daysLeft !== null && t.daysLeft <= 7;
+  const isEmpty     = t.remaining <= 0;
+  const btnDisabled = isExpired || isEmpty || state.processing;
+  const btnText     = isExpired ? '有効期限切れ' : isEmpty ? '残枚数なし' : '1回使用する';
+
+  let badgeClass = '';
+  let badgeText  = t.expiresAt ? `有効期限 ${t.expiresAt}` : '';
+  if (isExpired) { badgeClass = 'expired'; badgeText = '有効期限切れ'; }
+  else if (isLow){ badgeClass = 'warn';    badgeText = `期限まで残${t.daysLeft}日`; }
+
+  area.innerHTML = `
+    <div class="ticket-card${!btnDisabled ? ' active' : ''}">
+      <div class="ticket-header">
+        <div>
+          <div class="ticket-label">回数券</div>
+          <div class="ticket-name">${t.label}</div>
+        </div>
+        ${badgeText ? `<span class="expiry-badge ${badgeClass}">${badgeText}</span>` : ''}
+      </div>
+      <div class="remaining-wrap">
+        <div class="remaining-num">${t.remaining}</div>
+        <div class="remaining-unit">回</div>
+        <div class="remaining-total">/ ${t.qty}回</div>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" style="width:${pct}%"></div>
+      </div>
+      <button class="use-btn" id="use-btn" ${btnDisabled ? 'disabled' : ''} onclick="openModal()">
+        ${btnText}
+      </button>
+    </div>`;
+}
+
+function openModal() {
+  if (!state.ticket || state.processing) return;
+  const t = state.ticket;
+  document.getElementById('modal-ticket-name').textContent = t.label;
+  document.getElementById('modal-remaining').textContent   = `現在 ${t.remaining}回 → 使用後 ${t.remaining - 1}回`;
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+document.getElementById('btn-cancel').addEventListener('click', closeModal);
+document.getElementById('btn-confirm').addEventListener('click', async () => {
+  closeModal();
+  await useTicket();
+});
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+
 async function useTicket() {
+  if (state.processing) return;
+  state.processing = true;
+
+  const btn = document.getElementById('use-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '処理中...'; }
+
+  const idempotencyKey = `${state.userId}-${state.type}-${Date.now()}`;
+
   try {
-    clearError();
-
-    const btn = document.getElementById('useBtn');
-    btn.disabled = true;
-
-    const data = await callAPI({
+    const data = await callGAS({
       action: 'use',
       userId: state.userId,
-      type: 'face'
+      type:   state.type,
+      idempotencyKey,
     });
 
     if (data.status === 200) {
-      alert('使用しました');
-      await loadTickets();
+      state.ticket.remaining = data.remaining;
+      showDone(data.remaining);
     } else {
-      showError(data.error);
+      showError(data.error || '消費処理に失敗しました');
+      renderTicket();
     }
-
-    btn.disabled = false;
-
-  } catch (e) {
-    showError('通信失敗');
-    document.getElementById('useBtn').disabled = false;
+  } catch (err) {
+    showError('通信エラー: ' + err.message);
+    renderTicket();
+  } finally {
+    state.processing = false;
   }
 }
 
-function showError(msg) {
-  document.getElementById('error').innerText = msg;
+function showDone(remaining) {
+  document.getElementById('done-ticket-name').textContent = state.ticket?.label || '';
+  document.getElementById('done-remaining').textContent   =
+    remaining > 0 ? `残り ${remaining} 回` : '残枚数がなくなりました';
+  document.getElementById('done-screen').classList.add('show');
+  renderTicket();
 }
 
-function clearError() {
-  document.getElementById('error').innerText = '';
+function closeDone() {
+  document.getElementById('done-screen').classList.remove('show');
 }
+
+function showError(msg) {
+  const el = document.getElementById('error-box');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function show(id) { document.getElementById(id).style.display = ''; }
+function hide(id) { document.getElementById(id).style.display = 'none'; }
 
 init();
 </script>
-
 </body>
 </html>
