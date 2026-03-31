@@ -29,7 +29,6 @@
     min-height: 100dvh; display: flex; flex-direction: column;
   }
 
-  /* ローディング */
   #loading {
     position: fixed; inset: 0; background: var(--cream);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -43,7 +42,6 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   #loading p { font-size: 14px; color: var(--ink-lt); }
 
-  /* ヘッダー */
   header { padding: 20px 20px 0; display: flex; align-items: center; gap: 10px; }
   .logo {
     width: 32px; height: 32px; background: var(--green); border-radius: 8px;
@@ -54,7 +52,6 @@
 
   main { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
 
-  /* ユーザーバー */
   .user-bar {
     display: flex; align-items: center; gap: 10px;
     background: white; border: 1px solid #EBEBEB;
@@ -69,7 +66,6 @@
   .user-name { font-size: 14px; font-weight: 600; color: var(--ink); }
   .user-sub  { font-size: 11px; color: var(--ink-lt); margin-top: 1px; }
 
-  /* エラー */
   .error-box {
     background: var(--red-bg); border: 1px solid #F5C6C2;
     border-radius: var(--radius-sm); padding: 14px 16px;
@@ -78,7 +74,7 @@
   .error-box.show { display: block; }
 
   /* ===== 顧客登録画面 ===== */
-  #register-screen {
+  .register-card {
     background: white; border: 1.5px solid #EBEBEB;
     border-radius: var(--radius); padding: 24px 20px;
   }
@@ -88,48 +84,68 @@
   .form-input {
     width: 100%; padding: 14px 16px; border: 1.5px solid #E0E0E0;
     border-radius: var(--radius-sm); font-size: 16px; color: var(--ink);
-    background: white; margin-bottom: 6px; transition: border-color .15s;
-    font-family: inherit;
+    background: white; margin-bottom: 6px; transition: border-color .15s; font-family: inherit;
   }
   .form-input:focus { outline: none; border-color: var(--green); }
-  .form-hint { font-size: 11px; color: var(--ink-lt); margin-bottom: 20px; }
+  .form-hint  { font-size: 11px; color: var(--ink-lt); margin-bottom: 20px; }
   .form-error { font-size: 12px; color: var(--red); margin-bottom: 12px; display: none; }
   .form-error.show { display: block; }
-
-  /* 確認ステップ */
-  .confirm-box {
-    background: var(--green-bg); border-radius: var(--radius-sm);
-    padding: 16px; margin-bottom: 20px;
-  }
+  .confirm-box { background: var(--green-bg); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 20px; }
   .confirm-label { font-size: 11px; color: var(--green-mid); margin-bottom: 4px; }
   .confirm-name  { font-size: 20px; font-weight: 800; color: var(--green); }
 
-  /* チケットカード */
+  /* ===== 券種一覧 ===== */
+  .section-title { font-size: 12px; font-weight: 600; color: var(--ink-lt); letter-spacing: .04em; margin-bottom: 10px; }
+
+  .ticket-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .ticket-row {
+    background: white; border: 1.5px solid #EBEBEB;
+    border-radius: var(--radius); padding: 16px 18px;
+    display: flex; align-items: center; gap: 14px;
+    cursor: pointer; transition: border-color .15s, transform .1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .ticket-row:active { transform: scale(.99); }
+  .ticket-row.active { border-color: var(--green-lt); }
+  .ticket-row.disabled { opacity: .5; cursor: default; }
+
+  .ticket-row-info { flex: 1; }
+  .ticket-row-name { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .ticket-row-meta { display: flex; align-items: center; gap: 8px; }
+  .ticket-row-expiry { font-size: 11px; color: var(--ink-lt); }
+  .expiry-badge {
+    font-size: 10px; padding: 2px 7px; border-radius: 20px; font-weight: 600;
+    background: var(--green-bg); color: var(--green); white-space: nowrap;
+  }
+  .expiry-badge.warn    { background: var(--amber-bg); color: var(--amber); }
+  .expiry-badge.expired { background: var(--red-bg);   color: var(--red); }
+
+  .ticket-row-remaining {
+    display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0;
+  }
+  .remaining-big  { font-size: 32px; font-weight: 900; line-height: 1; color: var(--green); letter-spacing: -.04em; }
+  .remaining-unit { font-size: 11px; color: var(--ink-lt); margin-top: 2px; }
+
+  .mini-progress { width: 48px; height: 3px; background: var(--green-bg); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+  .mini-progress-fill { height: 100%; background: var(--green); border-radius: 2px; }
+
+  /* ===== 単一チケット画面 ===== */
   .ticket-card {
     background: white; border: 1.5px solid #EBEBEB;
     border-radius: var(--radius); padding: 20px; transition: border-color .2s;
   }
   .ticket-card.active { border-color: var(--green-lt); }
-  .ticket-header {
-    display: flex; justify-content: space-between; align-items: flex-start;
-    margin-bottom: 16px;
-  }
+  .ticket-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
   .ticket-label { font-size: 13px; color: var(--ink-lt); font-weight: 500; }
   .ticket-name  { font-size: 20px; font-weight: 800; color: var(--ink); margin-top: 3px; letter-spacing: -.02em; }
-  .expiry-badge {
-    font-size: 11px; padding: 4px 9px; border-radius: 20px; font-weight: 600;
-    background: var(--green-bg); color: var(--green); white-space: nowrap;
-  }
-  .expiry-badge.warn    { background: var(--amber-bg); color: var(--amber); }
-  .expiry-badge.expired { background: var(--red-bg);   color: var(--red); }
   .remaining-wrap { display: flex; align-items: baseline; gap: 6px; margin-bottom: 12px; }
   .remaining-num   { font-size: 56px; font-weight: 900; line-height: 1; color: var(--green); letter-spacing: -.04em; }
-  .remaining-unit  { font-size: 16px; color: var(--ink-mid); font-weight: 600; }
+  .remaining-unit2 { font-size: 16px; color: var(--ink-mid); font-weight: 600; }
   .remaining-total { font-size: 13px; color: var(--ink-lt); }
-  .progress-track  { height: 6px; background: var(--green-bg); border-radius: 3px; overflow: hidden; margin-bottom: 16px; }
-  .progress-fill   { height: 100%; background: var(--green); border-radius: 3px; transition: width .6s cubic-bezier(.4,0,.2,1); }
+  .progress-track { height: 6px; background: var(--green-bg); border-radius: 3px; overflow: hidden; margin-bottom: 16px; }
+  .progress-fill  { height: 100%; background: var(--green); border-radius: 3px; transition: width .6s cubic-bezier(.4,0,.2,1); }
 
-  /* 空状態 */
   .empty-state {
     background: white; border: 1.5px solid #EBEBEB;
     border-radius: var(--radius); padding: 32px 20px; text-align: center;
@@ -138,21 +154,23 @@
   .empty-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
   .empty-desc  { font-size: 13px; color: var(--ink-lt); line-height: 1.6; }
 
-  /* ボタン共通 */
   .btn-primary {
     width: 100%; padding: 17px; background: var(--green);
     color: white; font-size: 16px; font-weight: 700;
     border: none; border-radius: var(--radius-sm); cursor: pointer;
-    letter-spacing: .03em; transition: background .15s, transform .1s;
-    font-family: inherit;
+    letter-spacing: .03em; transition: background .15s, transform .1s; font-family: inherit;
   }
   .btn-primary:active:not(:disabled) { transform: scale(.98); }
   .btn-primary:disabled { background: #C8C8C8; cursor: not-allowed; opacity: .7; }
   .btn-secondary {
-    width: 100%; padding: 14px; background: none;
-    color: var(--ink-lt); font-size: 15px; font-weight: 600;
-    border: 1px solid #EBEBEB; border-radius: var(--radius-sm);
-    cursor: pointer; margin-top: 10px; font-family: inherit;
+    width: 100%; padding: 14px; background: none; color: var(--ink-lt);
+    font-size: 15px; font-weight: 600; border: 1px solid #EBEBEB;
+    border-radius: var(--radius-sm); cursor: pointer; margin-top: 10px; font-family: inherit;
+  }
+  .btn-back {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 13px; color: var(--ink-lt); background: none; border: none;
+    cursor: pointer; padding: 0; margin-bottom: 12px; font-family: inherit;
   }
 
   /* モーダル */
@@ -174,7 +192,7 @@
   .modal-ticket-info { background: var(--green-bg); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 24px; }
   .modal-ticket-name { font-size: 15px; font-weight: 700; color: var(--green); }
   .modal-remaining   { font-size: 13px; color: var(--green-mid); margin-top: 4px; }
-  .modal-btns        { display: flex; flex-direction: column; gap: 10px; }
+  .modal-btns { display: flex; flex-direction: column; gap: 10px; }
   .btn-confirm {
     padding: 16px; background: var(--green); color: white;
     font-size: 16px; font-weight: 700; border: none;
@@ -190,8 +208,7 @@
   /* 完了画面 */
   .done-screen {
     position: fixed; inset: 0; background: var(--cream);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
     padding: 32px; z-index: 300; opacity: 0; pointer-events: none; transition: opacity .3s;
   }
   .done-screen.show { opacity: 1; pointer-events: all; }
@@ -252,7 +269,7 @@
   </div>
 </div>
 
-<!-- 消費完了画面 -->
+<!-- 完了画面 -->
 <div class="done-screen" id="done-screen">
   <div class="done-circle">
     <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
@@ -265,10 +282,10 @@
 
 <script>
 // ===== 設定 =====
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbz6-nE1CbJdGxMgs-Hn1503yGJSdyYfL5WlEzPk9bEBFAnTaJMcZj8wMIGYt_Bq5WEQhg/exec';
-const API_KEY = 'salon-api-key-2025';
-const LIFF_ID = '2009640952-lBudTrLt';
-const BOOKING_URL = 'https://example.com/booking'; // ← 予約URLに差し替え
+const GAS_URL    = 'https://script.google.com/macros/s/AKfycbz6-nE1CbJdGxMgs-Hn1503yGJSdyYfL5WlEzPk9bEBFAnTaJMcZj8wMIGYt_Bq5WEQhg/exec';
+const API_KEY    = 'salon-api-key-2025';
+const LIFF_ID    = '2009640952-lBudTrLt';
+const BOOKING_URL = 'https://example.com/booking';
 
 const TICKET_MASTER = {
   face: '鍼（お顔）', body: '鍼（お体）',
@@ -277,13 +294,13 @@ const TICKET_MASTER = {
 
 let state = {
   userId: null, profile: null,
-  type: null, qty: null,
-  ticket: null, processing: false,
-  registered: false, customerName: null,
-  step: 'loading', // loading | register-input | register-confirm | ticket
+  tickets: [],         // 保有券種一覧
+  selectedTicket: null, // 選択中の券種
+  processing: false,
+  customerName: null,
 };
 
-// ===== GAS呼び出し（GETリクエスト） =====
+// ===== GAS呼び出し =====
 async function callGAS(params) {
   params.apiKey = API_KEY;
   const query = Object.entries(params)
@@ -296,30 +313,21 @@ async function callGAS(params) {
 // ===== 初期化 =====
 async function init() {
   try {
-    const params = new URLSearchParams(location.search);
-    state.type = params.get('type') || 'face';
-    state.qty  = params.get('qty');
-
     await liff.init({ liffId: LIFF_ID });
     if (!liff.isLoggedIn()) { liff.login(); return; }
 
     state.profile = await liff.getProfile();
     state.userId  = state.profile.userId;
-
     renderUserBar();
 
-    // 顧客登録済みか確認
-    const data = await callGAS({ action: 'checkUser', userId: state.userId });
+    // 登録済み確認
+    const check = await callGAS({ action: 'checkUser', userId: state.userId });
 
-    if (data.status === 200 && data.registered) {
-      // 登録済み → チケット画面へ
-      state.registered   = true;
-      state.customerName = data.customerName;
-      document.getElementById('user-sub').textContent = data.customerName;
-      await loadTickets();
+    if (check.status === 200 && check.registered) {
+      state.customerName = check.customerName;
+      document.getElementById('user-sub').textContent = check.customerName;
+      await loadAndRenderTickets();
     } else {
-      // 未登録 → 顧客登録画面へ
-      state.registered = false;
       renderRegisterInput();
     }
 
@@ -332,7 +340,6 @@ async function init() {
   }
 }
 
-// ===== ユーザーバー描画 =====
 function renderUserBar() {
   const name = state.profile?.displayName || 'お客様';
   document.getElementById('user-name').textContent = name;
@@ -344,31 +351,134 @@ function renderUserBar() {
   }
 }
 
-// ===== 顧客登録：入力画面 =====
-function renderRegisterInput() {
-  state.step = 'register-input';
+// ===== チケット読み込み → 画面振り分け =====
+async function loadAndRenderTickets() {
+  try {
+    const data = await callGAS({ action: 'list', userId: state.userId });
+    if (data.status !== 200) { showError(data.error || '取得失敗'); return; }
+
+    // 有効期限切れ・残0は除いて表示（全部見せたい場合はこの行を削除）
+    state.tickets = (data.tickets || []).filter(t => !t.expired && t.remaining > 0);
+
+    if (state.tickets.length === 0) {
+      renderEmpty();
+    } else if (state.tickets.length === 1) {
+      // 1種類だけ → 直接消費画面
+      state.selectedTicket = state.tickets[0];
+      renderSingleTicket();
+    } else {
+      // 複数 → 一覧表示
+      renderTicketList();
+    }
+  } catch (err) {
+    showError('通信エラー: ' + err.message);
+  }
+}
+
+// ===== 券種一覧画面 =====
+function renderTicketList() {
   const area = document.getElementById('content-area');
+  const items = state.tickets.map(t => {
+    const pct      = t.qty > 0 ? Math.round(t.remaining / t.qty * 100) : 0;
+    const isLow    = t.daysLeft !== null && t.daysLeft <= 7;
+    let badgeClass = '', badgeText = '';
+    if (isLow) { badgeClass = 'warn'; badgeText = `残${t.daysLeft}日`; }
+
+    return `
+      <div class="ticket-row active" onclick="selectTicket('${t.type}')">
+        <div class="ticket-row-info">
+          <div class="ticket-row-name">${t.label}</div>
+          <div class="ticket-row-meta">
+            <span class="ticket-row-expiry">${t.expiresAt}まで</span>
+            ${badgeText ? `<span class="expiry-badge ${badgeClass}">${badgeText}</span>` : ''}
+          </div>
+        </div>
+        <div class="ticket-row-remaining">
+          <div class="remaining-big">${t.remaining}</div>
+          <div class="remaining-unit">回</div>
+          <div class="mini-progress">
+            <div class="mini-progress-fill" style="width:${pct}%"></div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
   area.innerHTML = `
-    <div id="register-screen">
+    <p class="section-title">使用する回数券を選んでください</p>
+    <div class="ticket-list">${items}</div>`;
+}
+
+// ===== 券種を選択 → 消費確認モーダルへ =====
+function selectTicket(type) {
+  state.selectedTicket = state.tickets.find(t => t.type === type);
+  if (!state.selectedTicket) return;
+  openModal();
+}
+
+// ===== 単一チケット画面 =====
+function renderSingleTicket() {
+  const t   = state.selectedTicket;
+  const pct = t.qty > 0 ? Math.round(t.remaining / t.qty * 100) : 0;
+  const isLow = t.daysLeft !== null && t.daysLeft <= 7;
+  let badgeClass = '', badgeText = t.expiresAt ? `有効期限 ${t.expiresAt}` : '';
+  if (isLow) { badgeClass = 'warn'; badgeText = `期限まで残${t.daysLeft}日`; }
+
+  const backBtn = state.tickets.length > 1
+    ? `<button class="btn-back" onclick="renderTicketList()">← 券種一覧に戻る</button>`
+    : '';
+
+  document.getElementById('content-area').innerHTML = `
+    ${backBtn}
+    <div class="ticket-card active">
+      <div class="ticket-header">
+        <div>
+          <div class="ticket-label">回数券</div>
+          <div class="ticket-name">${t.label}</div>
+        </div>
+        ${badgeText ? `<span class="expiry-badge ${badgeClass}">${badgeText}</span>` : ''}
+      </div>
+      <div class="remaining-wrap">
+        <div class="remaining-num">${t.remaining}</div>
+        <div class="remaining-unit2">回</div>
+        <div class="remaining-total">/ ${t.qty}回</div>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" style="width:${pct}%"></div>
+      </div>
+      <button class="btn-primary" id="use-btn" onclick="openModal()">1回使用する</button>
+    </div>`;
+}
+
+// ===== 空状態 =====
+function renderEmpty() {
+  document.getElementById('content-area').innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">🎫</div>
+      <div class="empty-title">回数券が見つかりません</div>
+      <div class="empty-desc">有効な回数券をご購入ください。</div>
+    </div>`;
+}
+
+// ===== 顧客登録：入力 =====
+function renderRegisterInput() {
+  document.getElementById('content-area').innerHTML = `
+    <div class="register-card">
       <div class="register-title">はじめまして</div>
       <div class="register-desc">初回ご利用のお客様は、お名前の登録をお願いします。カタカナでフルネームをご入力ください。</div>
       <label class="form-label">お名前（カタカナ）</label>
       <input class="form-input" type="text" id="nameInput" placeholder="例：スズキ マリコ"
         inputmode="text" autocomplete="off" oninput="validateName(this.value)">
       <div class="form-error" id="name-error"></div>
-      <div class="form-hint">※ カタカナ・スペース（全角半角）のみ入力できます</div>
+      <div class="form-hint">※ カタカナ・スペースのみ入力できます</div>
       <button class="btn-primary" id="reg-next-btn" onclick="goToRegisterConfirm()" disabled>次へ</button>
     </div>`;
 }
 
 function validateName(val) {
-  const btn = document.getElementById('reg-next-btn');
-  const err = document.getElementById('name-error');
+  const btn     = document.getElementById('reg-next-btn');
+  const err     = document.getElementById('name-error');
   const cleaned = val.trim();
-
-  // カタカナ・スペース（全角半角）のみ許可
-  const valid = /^[ァ-ヶーｦ-ﾟ\u30A0\s　]+$/.test(cleaned) && cleaned.length >= 2;
-
+  const valid   = /^[ァ-ヶーｦ-ﾟ\u30A0\s　]+$/.test(cleaned) && cleaned.length >= 2;
   if (cleaned.length > 0 && !valid) {
     err.textContent = 'カタカナで入力してください（例：スズキ マリコ）';
     err.classList.add('show');
@@ -378,14 +488,11 @@ function validateName(val) {
   btn.disabled = !valid;
 }
 
-// ===== 顧客登録：確認画面 =====
 function goToRegisterConfirm() {
   const name = document.getElementById('nameInput').value.trim();
   state.customerName = name;
-  state.step = 'register-confirm';
-  const area = document.getElementById('content-area');
-  area.innerHTML = `
-    <div id="register-screen">
+  document.getElementById('content-area').innerHTML = `
+    <div class="register-card">
       <div class="register-title">登録内容の確認</div>
       <div class="register-desc">以下の内容で登録します。よろしければ「登録する」をタップしてください。</div>
       <div class="confirm-box">
@@ -397,98 +504,32 @@ function goToRegisterConfirm() {
     </div>`;
 }
 
-// ===== 顧客登録：実行 =====
 async function doRegister() {
   const btn = document.getElementById('reg-btn');
-  btn.disabled = true;
-  btn.textContent = '登録中...';
-
+  btn.disabled = true; btn.textContent = '登録中...';
   try {
     const data = await callGAS({
-      action:       'registerUser',
-      userId:       state.userId,
+      action: 'registerUser',
+      userId: state.userId,
       customerName: encodeURIComponent(state.customerName),
     });
-
     if (data.status === 200) {
-      state.registered = true;
       document.getElementById('user-sub').textContent = state.customerName;
-      await loadTickets();
+      await loadAndRenderTickets();
     } else {
       showError(data.error || '登録に失敗しました');
-      btn.disabled = false;
-      btn.textContent = '登録する';
+      btn.disabled = false; btn.textContent = '登録する';
     }
   } catch (err) {
     showError('通信エラー: ' + err.message);
-    btn.disabled = false;
-    btn.textContent = '登録する';
+    btn.disabled = false; btn.textContent = '登録する';
   }
-}
-
-// ===== チケット読み込み =====
-async function loadTickets() {
-  state.step = 'ticket';
-  try {
-    const data = await callGAS({ action: 'list', userId: state.userId });
-    if (data.status !== 200) { showError(data.error || '取得失敗'); return; }
-    state.ticket = (data.tickets || []).find(t => t.type === state.type) || null;
-    renderTicket();
-  } catch (err) {
-    showError('通信エラー: ' + err.message);
-  }
-}
-
-// ===== チケット描画 =====
-function renderTicket() {
-  const area = document.getElementById('content-area');
-  if (!state.ticket) {
-    area.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🎫</div>
-        <div class="empty-title">回数券が見つかりません</div>
-        <div class="empty-desc">${TICKET_MASTER[state.type] || state.type}の<br>回数券をご購入ください。</div>
-      </div>`;
-    return;
-  }
-  const t           = state.ticket;
-  const pct         = t.qty > 0 ? Math.round(t.remaining / t.qty * 100) : 0;
-  const isExpired   = t.expired;
-  const isLow       = !isExpired && t.daysLeft !== null && t.daysLeft <= 7;
-  const isEmpty     = t.remaining <= 0;
-  const btnDisabled = isExpired || isEmpty || state.processing;
-  const btnText     = isExpired ? '有効期限切れ' : isEmpty ? '残枚数なし' : '1回使用する';
-  let badgeClass = '', badgeText = t.expiresAt ? `有効期限 ${t.expiresAt}` : '';
-  if (isExpired) { badgeClass = 'expired'; badgeText = '有効期限切れ'; }
-  else if (isLow){ badgeClass = 'warn';    badgeText = `期限まで残${t.daysLeft}日`; }
-
-  area.innerHTML = `
-    <div class="ticket-card${!btnDisabled ? ' active' : ''}">
-      <div class="ticket-header">
-        <div>
-          <div class="ticket-label">回数券</div>
-          <div class="ticket-name">${t.label}</div>
-        </div>
-        ${badgeText ? `<span class="expiry-badge ${badgeClass}">${badgeText}</span>` : ''}
-      </div>
-      <div class="remaining-wrap">
-        <div class="remaining-num">${t.remaining}</div>
-        <div class="remaining-unit">回</div>
-        <div class="remaining-total">/ ${t.qty}回</div>
-      </div>
-      <div class="progress-track">
-        <div class="progress-fill" style="width:${pct}%"></div>
-      </div>
-      <button class="btn-primary" id="use-btn" ${btnDisabled ? 'disabled' : ''} onclick="openModal()">
-        ${btnText}
-      </button>
-    </div>`;
 }
 
 // ===== モーダル =====
 function openModal() {
-  if (!state.ticket || state.processing) return;
-  const t = state.ticket;
+  if (!state.selectedTicket || state.processing) return;
+  const t = state.selectedTicket;
   document.getElementById('modal-ticket-name').textContent = t.label;
   document.getElementById('modal-remaining').textContent   = `現在 ${t.remaining}回 → 使用後 ${t.remaining - 1}回`;
   document.getElementById('modal').classList.add('show');
@@ -496,39 +537,51 @@ function openModal() {
 function closeModal() { document.getElementById('modal').classList.remove('show'); }
 document.getElementById('btn-cancel').addEventListener('click', closeModal);
 document.getElementById('btn-confirm').addEventListener('click', async () => { closeModal(); await useTicket(); });
-document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) closeModal(); });
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
 
 // ===== 1回消費 =====
 async function useTicket() {
-  if (state.processing) return;
+  if (state.processing || !state.selectedTicket) return;
   state.processing = true;
-  const btn = document.getElementById('use-btn');
-  if (btn) { btn.disabled = true; btn.textContent = '処理中...'; }
-  const idempotencyKey = `${state.userId}-${state.type}-${Date.now()}`;
+
+  const idempotencyKey = `${state.userId}-${state.selectedTicket.type}-${Date.now()}`;
   try {
-    const data = await callGAS({ action: 'use', userId: state.userId, type: state.type, idempotencyKey });
+    const data = await callGAS({
+      action: 'use',
+      userId: state.userId,
+      type:   state.selectedTicket.type,
+      idempotencyKey,
+    });
     if (data.status === 200) {
-      state.ticket.remaining = data.remaining;
+      state.selectedTicket.remaining = data.remaining;
       showDone(data.remaining);
+      // 一覧のデータも更新
+      const t = state.tickets.find(t => t.type === state.selectedTicket.type);
+      if (t) t.remaining = data.remaining;
     } else {
       showError(data.error || '消費処理に失敗しました');
-      renderTicket();
     }
   } catch (err) {
     showError('通信エラー: ' + err.message);
-    renderTicket();
   } finally {
     state.processing = false;
   }
 }
 
 function showDone(remaining) {
-  document.getElementById('done-ticket-name').textContent = state.ticket?.label || '';
-  document.getElementById('done-remaining').textContent   = remaining > 0 ? `残り ${remaining} 回` : '残枚数がなくなりました';
+  document.getElementById('done-ticket-name').textContent = state.selectedTicket?.label || '';
+  document.getElementById('done-remaining').textContent   =
+    remaining > 0 ? `残り ${remaining} 回` : '残枚数がなくなりました';
   document.getElementById('done-screen').classList.add('show');
-  renderTicket();
 }
-function closeDone() { document.getElementById('done-screen').classList.remove('show'); }
+
+function closeDone() {
+  document.getElementById('done-screen').classList.remove('show');
+  // 完了後に一覧を更新
+  loadAndRenderTickets();
+}
 
 function showError(msg) {
   const el = document.getElementById('error-box');
