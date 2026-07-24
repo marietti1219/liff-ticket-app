@@ -370,7 +370,7 @@
       type="text"
       class="form-input"
       id="name-input"
-      placeholder="例：スズキマリコ"
+      placeholder="例：ヤマダハナコ"
       inputmode="text"
       autocomplete="off"
     >
@@ -420,12 +420,25 @@
 <div class="modal-overlay" id="buy-confirm-modal">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
-    <div class="modal-title">買い足しのご希望</div>
-    <div class="modal-sub">スタッフにお声がけください。<br>会計時にご案内します。</div>
+    <div class="modal-title">購入のご希望</div>
+    <div class="modal-sub">ご希望の券種と回数を選んで<br>送信してください。</div>
     <div class="modal-info">
-      <div class="modal-info-row">
-        <span class="modal-info-label">券種</span>
-        <span class="modal-info-val" id="buy-label">—</span>
+      <div class="modal-info-row" style="flex-direction:column; gap:10px;">
+        <div style="width:100%">
+          <div class="modal-info-label" style="margin-bottom:6px;">券種</div>
+          <select id="buy-type-select" style="width:100%;padding:10px 12px;border:1.5px solid #74C69D;border-radius:8px;font-size:14px;background:white;color:#1A1A1A;">
+            <option value="acupuncture">鍼</option>
+            <option value="herb">ハーブピーリング</option>
+            <option value="ems">楽トレ(EMS)</option>
+          </select>
+        </div>
+        <div style="width:100%">
+          <div class="modal-info-label" style="margin-bottom:6px;">回数</div>
+          <select id="buy-qty-select" style="width:100%;padding:10px 12px;border:1.5px solid #74C69D;border-radius:8px;font-size:14px;background:white;color:#1A1A1A;">
+            <option value="5回券">5回券</option>
+            <option value="10回券">10回券</option>
+          </select>
+        </div>
       </div>
     </div>
     <button class="btn-primary" id="btn-confirm-buy" onclick="doRequestPurchase()">送信する</button>
@@ -458,8 +471,8 @@
 
 <script>
 // ===== 設定（デプロイ時に書き換える2箇所） =====
-const GAS_URL  = 'https://script.google.com/macros/s/AKfycbwyoYEotyHgLwA2Oc1qo2tCHTXCGeRrkpZEX1rvbJ0-gX8tMuGsttENl55ECns-CwQQqw/exec';
-const LIFF_ID  = '2009659015-rPu5Tm8c';
+const GAS_URL  = 'YOUR_GAS_URL_HERE';
+const LIFF_ID  = 'YOUR_LIFF_ID_HERE';
 const API_KEY  = 'salon-api-key-2025';
 
 // ===== 状態 =====
@@ -504,13 +517,9 @@ async function init() {
 
 // ===== GAS通信 =====
 async function callGAS(params) {
-  const form = Object.entries({ apiKey: API_KEY, ...params })
-    .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
-    .join('&');
   const res = await fetch(GAS_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: form,
+    body: JSON.stringify({ apiKey: API_KEY, ...params }),
   });
   return res.json();
 }
@@ -658,15 +667,20 @@ function closeDone() { hideModal('done-modal'); }
 
 // ===== 買い足し確認モーダル =====
 function openBuyConfirm() {
-  const label = state.selected ? state.selected.label : '（未選択）';
-  document.getElementById('buy-label').textContent = label;
+  // 選択中の券種があればデフォルトにセット
+  if (state.selected) {
+    document.getElementById('buy-type-select').value = state.selected.type;
+  }
   document.getElementById('btn-confirm-buy').disabled    = false;
   document.getElementById('btn-confirm-buy').textContent = '送信する';
   showModal('buy-confirm-modal');
 }
 
 async function doRequestPurchase() {
-  const btn = document.getElementById('btn-confirm-buy');
+  const btn     = document.getElementById('btn-confirm-buy');
+  const type    = document.getElementById('buy-type-select').value;
+  const qty     = document.getElementById('buy-qty-select').value;
+
   btn.disabled    = true;
   btn.textContent = '送信中…';
 
@@ -674,7 +688,8 @@ async function doRequestPurchase() {
     await callGAS({
       action: 'purchaseRequest',
       userId: state.userId,
-      type:   state.selected ? state.selected.type : '',
+      type:   type,
+      qty:    qty,
     });
     hideModal('buy-confirm-modal');
     showModal('buy-done-modal');
