@@ -504,9 +504,13 @@ async function init() {
 
 // ===== GAS通信 =====
 async function callGAS(params) {
+  const form = Object.entries({ apiKey: API_KEY, ...params })
+    .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
+    .join('&');
   const res = await fetch(GAS_URL, {
     method: 'POST',
-    body: JSON.stringify({ apiKey: API_KEY, ...params }),
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: form,
   });
   return res.json();
 }
