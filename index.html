@@ -289,7 +289,7 @@
     width: 100%; padding: 14px 16px;
     border: 1.5px solid #DCDCDC;
     border-radius: var(--radius-sm);
-    font-size: 16px; /* 16px以上でiOSズームなし */
+    font-size: 16px;
     background: white; color: var(--ink);
     margin-bottom: 8px;
     transition: border-color .15s;
@@ -426,7 +426,7 @@
       <div class="modal-info-row" style="flex-direction:column; gap:10px;">
         <div style="width:100%">
           <div class="modal-info-label" style="margin-bottom:6px;">券種</div>
-          <select id="buy-type-select" style="width:100%;padding:10px 12px;border:1.5px solid #74C69D;border-radius:8px;font-size:14px;background:white;color:#1A1A1A;">
+          <select id="buy-type-select" onchange="updatePurchaseQtyOptions()" style="width:100%;padding:10px 12px;border:1.5px solid #74C69D;border-radius:8px;font-size:14px;background:white;color:#1A1A1A;">
             <option value="acupuncture">鍼</option>
             <option value="herb">ハーブピーリング</option>
             <option value="ems">楽トレ(EMS)</option>
@@ -480,8 +480,8 @@ const state = {
   userId:       null,
   displayName:  null,
   pictureUrl:   null,
-  tickets:      [],       // 有効な券のみ
-  selected:     null,     // 選択中の券種オブジェクト
+  tickets:      [],
+  selected:     null,
 };
 
 // ===== 初期化 =====
@@ -495,14 +495,12 @@ async function init() {
     state.displayName = profile.displayName;
     state.pictureUrl  = profile.pictureUrl;
 
-    // 顧客登録確認
     const checkRes = await callGAS({ action: 'checkUser', userId: state.userId });
     if (!checkRes.registered) {
       showRegisterScreen();
       return;
     }
 
-    // 登録済み → 回数券一覧取得
     const listRes = await callGAS({ action: 'list', userId: state.userId });
     const validTickets = (listRes.tickets || []).filter(t => !t.expired && t.remaining > 0);
     state.tickets = validTickets;
@@ -518,13 +516,15 @@ async function init() {
 // ===== GAS通信 =====
 async function callGAS(params) {
   const form = Object.entries({ apiKey: API_KEY, ...params })
-  .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
-  .join('&');
-const res = await fetch(GAS_URL, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-  body: form,
-});
+    .map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v))
+    .join('&');
+
+  const res = await fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: form,
+  });
+
   return res.json();
 }
 
@@ -532,21 +532,24 @@ const res = await fetch(GAS_URL, {
 function hideLoading() {
   document.getElementById('loading').style.display = 'none';
 }
+
 function showMainScreen(name) {
   hideLoading();
   document.getElementById('main-header').style.display = 'flex';
   document.getElementById('main-screen').style.display  = 'flex';
   document.getElementById('register-screen').style.display = 'none';
 
-  // ユーザーバー
   document.getElementById('user-name-label').textContent = name + ' さま';
+
   const avatarWrap = document.getElementById('avatar-wrap');
+
   if (state.pictureUrl) {
     avatarWrap.innerHTML = `<img src="${state.pictureUrl}" alt="">`;
   } else {
     document.getElementById('avatar-initial').textContent = name.charAt(0);
   }
 }
+
 function showRegisterScreen() {
   hideLoading();
   document.getElementById('register-screen').style.display = 'flex';
@@ -563,7 +566,7 @@ function renderTickets() {
         <div class="empty-icon">🎫</div>
         <p>現在有効な回数券はありません。<br>ご購入希望の方はスタッフにお声がけください。</p>
       </div>`;
-    // 券なしでも「購入希望」ボタンは出す（券種なしで送信）
+
     document.getElementById('action-area').style.display = 'flex';
     document.getElementById('btn-use').style.display = 'none';
     document.getElementById('btn-buy').style.display = '';
@@ -582,6 +585,7 @@ function renderTickets() {
     const card = document.createElement('div');
     card.className = 'ticket-card';
     card.dataset.type = t.type;
+
     card.innerHTML = `
       <div class="card-top">
         <span class="card-label">${t.label}</span>
@@ -602,7 +606,6 @@ function renderTickets() {
 
 // ===== 券種選択 =====
 function selectTicket(ticket, cardEl) {
-  // 選択解除
   document.querySelectorAll('.ticket-card').forEach(c => c.classList.remove('selected'));
   cardEl.classList.add('selected');
   state.selected = ticket;
@@ -616,23 +619,28 @@ function selectTicket(ticket, cardEl) {
 // ===== 消費確認モーダル =====
 function openConfirm() {
   if (!state.selected) return;
+
   const t = state.selected;
+
   document.getElementById('confirm-label').textContent     = t.label;
   document.getElementById('confirm-remaining').textContent = t.remaining + ' 回';
   document.getElementById('confirm-expiry').textContent    = t.expiresAt || '—';
   document.getElementById('btn-confirm-use').disabled      = false;
   document.getElementById('btn-confirm-use').textContent   = '使用する';
+
   showModal('confirm-modal');
 }
 
 async function doUse() {
   if (!state.selected) return;
+
   const btn = document.getElementById('btn-confirm-use');
   btn.disabled = true;
   btn.textContent = '処理中…';
 
   try {
     const key = 'use-' + state.userId + '-' + state.selected.type + '-' + Date.now();
+
     const result = await callGAS({
       action:         'use',
       userId:         state.userId,
@@ -644,17 +652,20 @@ async function doUse() {
 
     if (result.status === 200) {
       const rem = result.remaining;
+
       document.getElementById('done-remaining').innerHTML = rem + '<span> 回</span>';
       document.getElementById('done-msg').textContent =
         rem === 0 ? '残枚数がなくなりました' : '残り枚数';
+
       showModal('done-modal');
 
-      // 状態を更新
       const t = state.selected;
       t.remaining = rem;
+
       if (rem === 0) {
         state.tickets = state.tickets.filter(x => x.type !== t.type);
       }
+
       state.selected = null;
       document.getElementById('action-area').style.display = 'none';
       renderTickets();
@@ -667,17 +678,49 @@ async function doUse() {
   }
 }
 
-function closeDone() { hideModal('done-modal'); }
+function closeDone() {
+  hideModal('done-modal');
+}
 
 // ===== 買い足し確認モーダル =====
 function openBuyConfirm() {
-  // 選択中の券種があればデフォルトにセット
   if (state.selected) {
     document.getElementById('buy-type-select').value = state.selected.type;
   }
+
+  updatePurchaseQtyOptions();
+
   document.getElementById('btn-confirm-buy').disabled    = false;
   document.getElementById('btn-confirm-buy').textContent = '送信する';
+
   showModal('buy-confirm-modal');
+}
+
+// ===== 券種に応じて回数選択肢を変更 =====
+function updatePurchaseQtyOptions() {
+  const type = document.getElementById('buy-type-select').value;
+  const qtySelect = document.getElementById('buy-qty-select');
+
+  const currentValue = qtySelect.value;
+
+  qtySelect.innerHTML = '';
+
+  const options = type === 'ems'
+    ? ['5回券', '10回券', '20回券']
+    : ['5回券', '10回券'];
+
+  options.forEach(qty => {
+    const option = document.createElement('option');
+    option.value = qty;
+    option.textContent = qty;
+    qtySelect.appendChild(option);
+  });
+
+  if (options.includes(currentValue)) {
+    qtySelect.value = currentValue;
+  } else {
+    qtySelect.value = '5回券';
+  }
 }
 
 async function doRequestPurchase() {
@@ -694,17 +737,24 @@ async function doRequestPurchase() {
       userId: state.userId,
       type:   type,
       qty:    qty,
-    });
+  });
+
     hideModal('buy-confirm-modal');
     showModal('buy-done-modal');
+
   } catch (e) {
     hideModal('buy-confirm-modal');
     showError('通信エラー: ' + e.message);
   }
 }
 
-function closeBuyConfirm() { hideModal('buy-confirm-modal'); }
-function closeBuyDone()    { hideModal('buy-done-modal');    }
+function closeBuyConfirm() {
+  hideModal('buy-confirm-modal');
+}
+
+function closeBuyDone() {
+  hideModal('buy-done-modal');
+}
 
 // ===== 新規登録 =====
 async function doRegister() {
@@ -713,7 +763,12 @@ async function doRegister() {
   const errEl = document.getElementById('name-error');
 
   errEl.style.display = 'none';
-  if (!name) { showFormError('お名前を入力してください'); return; }
+
+  if (!name) {
+    showFormError('お名前を入力してください');
+    return;
+  }
+
   if (!/^[ァ-ヶーｦ-ﾟ\u30A0\s　]+$/.test(name)) {
     showFormError('カタカナでご入力ください（例：スズキマリコ）');
     return;
@@ -746,15 +801,16 @@ async function doRegister() {
 
 function showFormError(msg) {
   const el = document.getElementById('name-error');
-  el.textContent    = msg;
-  el.style.display  = 'block';
+  el.textContent   = msg;
+  el.style.display = 'block';
 }
 
 function closeRegistered() {
   hideModal('registered-modal');
-  // 登録完了後はメイン画面に移動（券はないので空の状態）
+
   state.tickets  = [];
   state.selected = null;
+
   showMainScreen(document.getElementById('name-input').value.trim());
   renderTickets();
 }
@@ -763,20 +819,34 @@ function closeRegistered() {
 function showModal(id) {
   const el = document.getElementById(id);
   el.style.display = 'flex';
+
   requestAnimationFrame(() => el.classList.add('show'));
 }
+
 function hideModal(id) {
   const el = document.getElementById(id);
+
   el.classList.remove('show');
-  el.addEventListener('transitionend', () => { el.style.display = 'none'; }, { once: true });
+
+  el.addEventListener(
+    'transitionend',
+    () => {
+      el.style.display = 'none';
+    },
+    { once: true }
+  );
 }
 
 // ===== エラー表示 =====
 function showError(msg) {
   const el = document.getElementById('error-bar');
+
   el.textContent   = '⚠ ' + msg;
   el.style.display = 'block';
-  setTimeout(() => { el.style.display = 'none'; }, 5000);
+
+  setTimeout(() => {
+    el.style.display = 'none';
+  }, 5000);
 }
 
 // ===== 起動 =====
