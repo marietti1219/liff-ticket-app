@@ -705,21 +705,38 @@ function updatePurchaseQtyOptions() {
 
   qtySelect.innerHTML = '';
 
-  const options = type === 'ems'
-    ? ['5回券', '10回券', '20回券']
-    : ['5回券', '10回券'];
+  // 券種ごとの選択肢（value: GASへ送る値、label: 表示テキスト）
+  const QTY_MAP = {
+    acupuncture: [
+      { value: '5回券',  label: '5回券' },
+      { value: '10回券', label: '10回券' },
+    ],
+    herb: [
+      { value: '3回券',  label: '3回券（お試し・2ヶ月）' },
+      { value: '5回券',  label: '5回券' },
+      { value: '10回券', label: '10回券' },
+    ],
+    ems: [
+      { value: '5回券',  label: '5回券' },
+      { value: '10回券', label: '10回券' },
+      { value: '20回券', label: '20回券' },
+    ],
+  };
 
-  options.forEach(qty => {
+  const options = QTY_MAP[type] || QTY_MAP.acupuncture;
+
+  options.forEach(({ value, label }) => {
     const option = document.createElement('option');
-    option.value = qty;
-    option.textContent = qty;
+    option.value = value;
+    option.textContent = label;
     qtySelect.appendChild(option);
   });
 
-  if (options.includes(currentValue)) {
+  const values = options.map(o => o.value);
+  if (values.includes(currentValue)) {
     qtySelect.value = currentValue;
   } else {
-    qtySelect.value = '5回券';
+    qtySelect.value = options[0].value;
   }
 }
 
